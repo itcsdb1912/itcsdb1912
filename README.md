@@ -5,8 +5,8 @@
 ## To Begin
 
 - Follow [this](https://flask.palletsprojects.com/en/1.1.x/installation/) to install Flask
-- Run project with  ``` flask run``` 
-- and set enviorenment with ``` export FLASK_ENV=``` ( ```development``` || ```production```)
+- Run project with  ```./init.sh``` 
+- and set edit parameters in  ```init.sh``` file
 
 
 ## TODO (will be updated)

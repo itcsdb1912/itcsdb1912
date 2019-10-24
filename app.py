@@ -3,13 +3,16 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if request.cookies:
+        check()
+    else:
+        return render_template('index.html')
 
 
 @app.route('/create_user', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
-        return create_user(request)
+        return create_user(request.form)
     else:
         return show_create_user_page()
 
@@ -18,8 +21,9 @@ def list():
     return 'I think it works.'
 
 
-def create_user(request):
-    return render_template('show_user.html', u=request.form)
+def create_user(user):
+    print(user["password"])
+    return render_template('show_user.html', u=user)
     
 def show_create_user_page():
     return render_template('create_user.html')

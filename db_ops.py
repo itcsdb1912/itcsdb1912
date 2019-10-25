@@ -35,7 +35,7 @@ def signup(email, password):
     if result == None:
         with connection.cursor() as cursor:
             # Create a new record
-            sql = "INSERT INTO Customers (Email, AccountPassword) VALUES (%s, %s)"
+            sql = "INSERT INTO LoginInfo (Email, AccountPassword) VALUES (%s, %s)"
             cursor.execute(sql, (email, password))
         connection.commit()
         print("You have successfully signed up.")

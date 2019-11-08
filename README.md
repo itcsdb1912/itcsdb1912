@@ -12,7 +12,7 @@
 ## TODO (will be updated)
 - Server Design (API etc.)
 - ```DB``` Design
-- ```DB``` Connection
++ ```DB``` Connection
 - Create the ```ShopifyController```
 - Sync ```DB``` with ```ShopifyStore```
 - Add ```Auth``` and ```Session``` things to server

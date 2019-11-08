@@ -1,30 +1,28 @@
-import pymysql
+import psycopg2
 import json
 
 def connect_db():
     try:
-        connection = pymysql.connect(host='sql7.freesqldatabase.com',
-                             user='sql7309708',
-                             password='FGXydIM8XQ',
-                             db='sql7309708',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+        connection = psycopg2.connect("host='localhost' port='5432' dbname='test00' user='oytun' password='oytun'")
         print("Connected!")
         return connection
     except:
         print("Connection Failed")
         return False
 
-def create_login_table():
+def create_login_table(tablename):
     connection = connect_db()
-    with connection.cursor() as cursor:
-        sql = "CREATE TABLE LoginInfo(\
-            LoginId INT AUTO_INCREMENT,\
-            Email VARCHAR(100),\
-            AccountPassword VARCHAR(100),\
-            PRIMARY KEY (LoginId));"
-        cursor.execute(sql)
-
+    try:
+        sql = "CREATE TABLE %s(\
+            LoginId SERIAL PRIMARY KEY,\
+            Email VARCHAR NOT NULL,\
+            AccountPassword VARCHAR NOT NULL );"
+        connection.cursor().execute(sql, (tablename,))
+        connection.commit()
+        print("Table created.")
+    except:
+        print("Table exists.")
+#login table can be created only once.
 def signup(email, password):
     connection = connect_db()
     with connection.cursor() as cursor:
@@ -48,19 +46,19 @@ def login(email, password):
     connection = connect_db()
     with connection.cursor() as cursor:
         # Read a single record
-        sql = "SELECT AccountPassword FROM LoginInfo WHERE Email=%s"
+        sql = "SELECT Email, AccountPassword FROM LoginInfo WHERE Email=%s"
         cursor.execute(sql, (email,))
         result = cursor.fetchone()
+
     if result == None:
         print("Email address not found.")
         return False
     else:
-        if result == password:
+        if result[1] == password:
             print("Login successful.")
             return True
         else:
             print("Wrong password.")
             return False
 
-#signup -> GET: show form, POST: if user exist print FAIL, else: save -> then print OK signed up
-#login -> success / fail
+#functions are tested on local.

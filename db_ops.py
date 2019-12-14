@@ -64,7 +64,7 @@ class database:
             sql = "CREATE TABLE ProductVariantInfo(\
                 ProductVariantId SERIAL PRIMARY KEY,\
                 Color VARCHAR(15),\
-                Size CHAR,\
+                Size VARCHAR(10),\
                 Material VARCHAR(25),\
                 Stock INT NOT NULL,\
                 CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
@@ -145,12 +145,103 @@ class database:
         else:
             print("This product name exists. Please pick another name.")
             return False
+    def add_variant(self, stock, product, color="default", size="default", material="default"):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM ProductVariantInfo WHERE color=%s AND size=%s AND material=%s"
+            cursor.execute(sql, (color,size,material))
+            result = cursor.fetchone()
+        if result == None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "INSERT INTO ProductVariantInfo (Color, Size, Material, Stock, ProductId) \
+                    VALUES (%s, %s, %s, %s, (SELECT ProductId from ProductInfo WHERE ProductName = %s))"
+                cursor.execute(sql, (color, size, material, stock, product))
+            self.connection.commit()
+            print("You have successfully added a variant.")
+            return True
+        else:
+            print("This product variant exists with the same color, size and material type. Please choose something else.")
+            return False
 
-#db = database()
-#db.connect_db()
+    def change_email(self, oldemail, newemail):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT UserId FROM UserInfo WHERE Email=%s"
+            cursor.execute(sql, (newemail,))
+            result = cursor.fetchone()
+        if result == None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "UPDATE UserInfo SET Email=%s WHERE Email=%s"
+                cursor.execute(sql, (newemail,oldemail))
+            self.connection.commit()
+            print("Email address successfully updated.")
+            return True
+        else:
+            print("Entered email address already exists.")
+            return False
+    def change_password(self, email, newpassword):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT AccountPassword FROM UserInfo WHERE Email=%s"
+            cursor.execute(sql, (email,))
+            result = cursor.fetchone()
+        if result != None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "UPDATE UserInfo SET AccountPassword=%s WHERE Email=%s"
+                cursor.execute(sql, (newpassword,email))
+            self.connection.commit()
+            print("Password successfully updated.")
+            return True
+        else:
+            print("Email address does not exist.")
+            return False
+    def change_storename(self, oldname, newname):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT StoreId FROM StoreInfo WHERE StoreName=%s"
+            cursor.execute(sql, (newname,))
+            result = cursor.fetchone()
+        if result == None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "UPDATE StoreInfo SET StoreName=%s WHERE StoreName=%s"
+                cursor.execute(sql, (newname,oldname))
+            self.connection.commit()
+            print("Store name successfully updated.")
+            return True
+        else:
+            print("Entered store name already exists.")
+            return False
+    def change_storeaddress(self, name, newaddress):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT StoreId FROM StoreInfo WHERE StoreName=%s"
+            cursor.execute(sql, (name,))
+            result = cursor.fetchone()
+        if result == None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "UPDATE StoreInfo SET StoreAddress=%s WHERE StoreName=%s"
+                cursor.execute(sql, (newaddress,name))
+            self.connection.commit()
+            print("Store address successfully updated.")
+            return True
+        else:
+            print("Entered store address already exists.")
+            return False
+    #def change_productprice():
+    #def change_productdiscount():
+    #def update_variantstock():
+
+
+db = database()
+db.connect_db()
 #db.create_user_table()
 #db.create_store_table()
-#db.signup('sample@sample.com', 'testsecret')
+#db.signup('test@sample.com', 'testsecret')
 #db.login('sample@sample.com', 'testsecret')
 
 #db.new_store("Test Store 2", "İTÜ Gümüşsuyu", "sample@sample.com")
@@ -158,6 +249,10 @@ class database:
 #db.create_product_table()
 #db.create_variant_table()
 
+#db.add_variant(8, "sampletrend", color="Blue", size="XL", material="%80 COTTON, %20 ELASTANE")
+#db.change_email("sample@sample.com","changed2@sample.com")
+#db.change_password("changed2@sample.com", "testchanged")
 
 
-#All functions are tested.
+
+#All above functions are tested.

@@ -27,3 +27,6 @@ def create_user(user):
     
 def show_create_user_page():
     return render_template('create_user.html')
+    
+if __name__ == '__main__':
+    app.run(debug=True,host='0.0.0.0')

@@ -1,13 +1,27 @@
 from flask import Flask, request, redirect, url_for, render_template
+from shopifycontroller import shopify_controller
 app = Flask(__name__)
+
+shopifyconfig = {
+    'API_KEY':'89845d72235b041b2768eefada433d19',
+    'PASSWORD':'be009fcef7485dd88d70d1ec24215749',
+    'API_VERSION':'2019-10',
+    'SHOP_NAME':'havuz-pool'
+}
+shopifyctrl = shopify_controller(shopifyconfig)
+shopifyctrl.connect()
 
 @app.route('/')
 def index():
-    if request.cookies:
-        check()
-    else:
-        return render_template('index.html')
+    try:
+        products = shopifyctrl.get_products()
+        product_names = ''
 
+        for p in products:
+            product_names += '///////////// ' + p.title
+        return product_names
+    except Exception as e:
+        return 'err'
 
 @app.route('/create_user', methods=['GET', 'POST'])
 def create():

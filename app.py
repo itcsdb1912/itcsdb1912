@@ -1,6 +1,13 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, session
+import secrets
+
 from shopifycontroller import shopify_controller
+
 app = Flask(__name__)
+
+# session related
+app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
+app.config["SESSION_TYPE"] = "redis"
 
 shopifyconfig = {
     'API_KEY':'89845d72235b041b2768eefada433d19',
@@ -13,34 +20,36 @@ shopifyctrl.connect()
 
 @app.route('/')
 def index():
-    try:
+    if (session.get('user')):
+        return render_template('index.html', user=session.get('user'))
+    else:
+        return render_template('index.html', user=None)
+
+
+
+@app.route('/list_products')
+def list_products():
+    if (session.get('user')):
         products = shopifyctrl.get_products()
-        product_names = ''
+        return render_template('list_products', products=products)
+    else:
+        return redirect(url_for('index'));
 
-        for p in products:
-            product_names += '///////////// ' + p.title
-        return product_names
-    except Exception as e:
-        return 'err'
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['user'] = { 'username': request.form.get('username')}
+        return redirect(url_for('index'))
+    else:
+        return render_template('login.html');
 
-@app.route('/create_user', methods=['GET', 'POST'])
+@app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
-        return create_user(request.form)
+        print(request.form)
+        session['user'] = request.form
     else:
-        return show_create_user_page()
-
-@app.route('/list')
-def list():
-    return 'I think it works.'
-
-
-def create_user(user):
-    print(user["password"])
-    return render_template('show_user.html', u=user)
-    
-def show_create_user_page():
-    return render_template('create_user.html')
+        return render_template('create.html');
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0:5000')

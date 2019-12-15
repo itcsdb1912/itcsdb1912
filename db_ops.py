@@ -1,18 +1,22 @@
-#import psycopg2 if db is postgres
-import pymysql # if db is mysql
+import psycopg2 
+#if db is postgres
+#import pymysql 
+# if db is mysql
 import json
 from datetime import datetime
+from urllib.parse import urlparse
 
 class database:
     def __init__(self):
         self.connection = None
+        self.connect_info = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
     def connect_db(self):
         try:
-            #self.connection = psycopg2.connect("host='remotemysql.com' dbname='Y2twfztOBJ' user='Y2twfztOBJ' password='sDi9LakvoN'")
-            self.connection = pymysql.connect(host='remotemysql.com',
-                    user='Y2twfztOBJ',
-                    password='sDi9LakvoN',
-                    db='Y2twfztOBJ')
+            self.connection = psycopg2.connect(database = self.connect_info.path[1:],
+                                                user = self.connect_info.username,
+                                                password = self.connect_info.password,
+                                                host = self.connect_info.hostname)
+            #self.connection = pymysql.connect(host='remotemysql.com',user='Y2twfztOBJ',password='sDi9LakvoN',db='Y2twfztOBJ')
             print("Connected!")
             return self.connection
         except:
@@ -20,72 +24,64 @@ class database:
             return False
     
     def create_user_table(self):
-        try:
-            sql = "CREATE TABLE UserInfo(\
-                Id INT AUTO_INCREMENT PRIMARY KEY,\
-                Email VARCHAR(50) NOT NULL,\
-                CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
-                AccountPassword VARCHAR(25) NOT NULL );"
-            self.connection.cursor().execute(sql,)
-            self.connection.commit()
-            print("User table created.")
-        except:
-            print("User table exists.")
+
+        sql = "CREATE TABLE IF NOT EXISTS UserInfo(\
+            Id SERIAL PRIMARY KEY,\
+            Email VARCHAR(50) NOT NULL,\
+            CreatedOn timestamp without time zone DEFAULT now(),\
+            AccountPassword VARCHAR(25) NOT NULL );"
+        self.connection.cursor().execute(sql,)
+        self.connection.commit()
+        print("User table ready.")
     def create_store_table(self):
-        try:
-            sql = "CREATE TABLE StoreInfo(\
-                Id INT AUTO_INCREMENT PRIMARY KEY,\
-                StoreName VARCHAR(50) NOT NULL,\
-                StoreAddress VARCHAR(100) NOT NULL,\
-                CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
-                UserId INT NOT NULL,\
-                CONSTRAINT user_store\
-                    FOREIGN KEY (UserId)\
-                    REFERENCES UserInfo (Id)\
-                    ON DELETE CASCADE);"
-            self.connection.cursor().execute(sql, )
-            self.connection.commit()
-            print("Store table created.")
-        except:
-            print("Store table exists.")
+        
+        sql = "CREATE TABLE IF NOT EXISTS StoreInfo(\
+            Id SERIAL PRIMARY KEY,\
+            StoreName VARCHAR(50) NOT NULL,\
+            StoreAddress VARCHAR(100) NOT NULL,\
+            CreatedOn timestamp without time zone DEFAULT now(),\
+            UserId INTEGER NOT NULL,\
+            CONSTRAINT user_store\
+                FOREIGN KEY (UserId)\
+                REFERENCES UserInfo (Id)\
+                ON DELETE CASCADE);"
+        self.connection.cursor().execute(sql, )
+        self.connection.commit()
+        print("Store table ready.")
     def create_product_table(self):
-        try:
-            sql = "CREATE TABLE ProductInfo(\
-                Id INT AUTO_INCREMENT PRIMARY KEY,\
-                ProductName VARCHAR(50) NOT NULL,\
-                ProductCategory VARCHAR(50) NOT NULL,\
-                ProductPrice FLOAT NOT NULL,\
-                ProductDiscount FLOAT NOT NULL,\
-                CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
-                StoreId INT NOT NULL,\
-                CONSTRAINT store_product\
-                    FOREIGN KEY (StoreId)\
-                    REFERENCES StoreInfo (Id)\
-                    ON DELETE CASCADE);"
-            self.connection.cursor().execute(sql,)
-            self.connection.commit()
-            print("Product table created")
-        except:
-            print("Product table exists.")
+    
+        sql = "CREATE TABLE IF NOT EXISTS ProductInfo(\
+            Id SERIAL PRIMARY KEY,\
+            ProductName VARCHAR(50) NOT NULL,\
+            ProductCategory VARCHAR(50) NOT NULL,\
+            ProductPrice FLOAT NOT NULL,\
+            ProductDiscount FLOAT NOT NULL,\
+            CreatedOn timestamp without time zone DEFAULT now(),\
+            StoreId INTEGER NOT NULL,\
+            CONSTRAINT store_product\
+                FOREIGN KEY (StoreId)\
+                REFERENCES StoreInfo (Id)\
+                ON DELETE CASCADE);"
+        self.connection.cursor().execute(sql,)
+        self.connection.commit()
+        print("Product table ready")
     def create_variant_table(self):
-        try:
-            sql = "CREATE TABLE ProductVariantInfo(\
-                Id SERIAL PRIMARY KEY,\
-                Color VARCHAR(15),\
-                Size VARCHAR(10),\
-                Material VARCHAR(25),\
-                Stock INT NOT NULL,\
-                CreatedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
-                ProductId INT NOT NULL,\
-                CONSTRAINT product_variant\
-                    FOREIGN KEY (ProductId)\
-                    REFERENCES ProductInfo (Id)\
-                    ON DELETE CASCADE);"
-            self.connection.cursor().execute(sql, )
-            self.connection.commit()
-            print("Variant table created.")
-        except:
-            print("Variant table exists.")
+        
+        sql = "CREATE TABLE IF NOT EXISTS ProductVariantInfo(\
+            Id SERIAL PRIMARY KEY,\
+            Color VARCHAR(15),\
+            Size VARCHAR(10),\
+            Material VARCHAR(25),\
+            Stock INTEGER NOT NULL,\
+            CreatedOn timestamp without time zone DEFAULT now(),\
+            ProductId INTEGER NOT NULL,\
+            CONSTRAINT product_variant\
+                FOREIGN KEY (ProductId)\
+                REFERENCES ProductInfo (Id)\
+                ON DELETE CASCADE);"
+        self.connection.cursor().execute(sql, )
+        self.connection.commit()
+        print("Variant table ready.")
 
     def signup(self, email, password):      
         with self.connection.cursor() as cursor:
@@ -296,7 +292,7 @@ class database:
         with self.connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT Id FROM ProductVariantInfo WHERE Id=%s"
-            cursor.execute(sql, (id))
+            cursor.execute(sql, (id,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
@@ -310,23 +306,6 @@ class database:
             print("Entered variant cannot be found.")
             return False
 
-
-        with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM StoreInfo WHERE UserId=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-        if result == None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "DELETE FROM UserInfo WHERE Id=%s"
-                cursor.execute(sql, (id))
-            self.connection.commit()
-            print("User successfully deleted.")
-            return True
-        else:
-            print("Stores belong to the user need to be deleted.")
-
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -337,7 +316,7 @@ class database:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "DELETE FROM UserInfo WHERE Id=%s"
-                cursor.execute(sql, (userid))
+                cursor.execute(sql, (userid,))
             self.connection.commit()
             print("User successfully deleted.")
             return True
@@ -354,7 +333,7 @@ class database:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "DELETE FROM StoreInfo WHERE Id=%s"
-                cursor.execute(sql, (storeid))
+                cursor.execute(sql, (storeid,))
             self.connection.commit()
             print("Store successfully deleted.")
             return True
@@ -371,7 +350,7 @@ class database:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "DELETE FROM ProductInfo WHERE Id=%s"
-                cursor.execute(sql, (productid))
+                cursor.execute(sql, (productid,))
             self.connection.commit()
             print("Product successfully deleted.")
             return True
@@ -388,13 +367,21 @@ class database:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "DELETE FROM ProductVariantInfo WHERE Id=%s"
-                cursor.execute(sql, (variantid))
+                cursor.execute(sql, (variantid,))
             self.connection.commit()
             print("Variant successfully deleted.")
             return True
         else:
             print("Variant deletion failed.")
             return False
+
+    def get_data(self):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM UserInfo"
+            cursor.execute(sql, ())
+            result = cursor.fetchall()
+            print(result)
 
 def test_case():
     db = database()
@@ -404,10 +391,10 @@ def test_case():
     db.signup('test@sample.com', 'testsecret')
     db.login('test@sample.com', 'testsecret')
 
-    uid = 5
-    sid = 8
-    pid = 4
-    vid = 6
+    uid = 1
+    sid = 2
+    pid = 3
+    vid = 5
 
     db.new_store(uid,"Test Store 2", "İTÜ Gümüşsuyu")
     db.new_store(uid,"Test Store 1", "İTÜ Taşkışla")
@@ -416,17 +403,26 @@ def test_case():
     db.create_variant_table()
     db.add_product(sid, "sampletrend", "test", 15.5, 0)
 
-    db.add_variant(pid, 800, color="Blue", size="XL", material="%80 COTTON, %20 ELASTANE")
-    #db.delete_variant(vid)
+    db.add_variant(pid, 800, color="Yellow", size="XL")
 
     db.change_email(uid,"changed2@sample.com")
     db.change_storename(sid, "testchangename")
     db.change_storeaddress(sid, "İTÜ Tuzla")
-    #db.change_password(uid, "testchanged")
-    #db.change_productprice(pid, 322.85)
-    #db.change_productdiscount(pid, 0.15)
+    db.change_password(uid, "testchanged")
+    db.change_productprice(pid, 322.85)
+    db.change_productdiscount(pid, 0.15)
     db.update_variantstock(vid, 11)
-    db.delete_store(sid)
+
+    #db.delete_store(sid)
+    #db.delete_variant(vid)
+    #db.delete_account(uid)
+    #db.delete_product(pid)
+
+#test_case()
+
+db = database()
+db.connect_db()
+db.get_data()
 
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table

@@ -35,13 +35,29 @@ def list_products():
     else:
         return redirect(url_for('index'));
 
+@app.route('/product/<int:product_id>')
+def product(product_id):
+    if (session.get('user')):
+        p = shopifyctrl.get_product(int(product_id))
+        return render_template('product.html', product=p)
+    else:
+        return redirect(url_for('index'));
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         session['user'] = { 'username': request.form.get('username')}
-        return redirect(url_for('index'))
+        return render_template('index.html', user=session.get('user'))
     else:
         return render_template('login.html');
+
+@app.route('/logout')
+def logout():
+    if(session.get('user')):
+        session.clear()
+    return redirect(url_for('index'))
+
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():

@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+    {% if product %}
+        <p>{{ product.title }}</p>
+    {% else %}
+        <h1>wrong product_id</h1>
+    {% endif %}
+</div>
+{% endblock %}

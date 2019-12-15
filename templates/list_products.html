@@ -1,17 +1,22 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div>
+<div id="ProductList">
     {% if products %}
         <h2>Products</h2>
-        <div>
-            <div>
+        <div class="product_list__container">
+            <div class="product_list">
                 {% for p in products %}
-                    <div>
-                        <p>{{p.title}}</p>
+                    <div class="product_item">
+                        <img src="{{ p.image.src }}" alt="">
+                        <div>
+                            <p>{{p.title}}</p>
+                            <p>Stock: {{p.variants[0].inventory_quantity}}</p>
+                            <a href="/product/{{p.id}}">View</a>
+                        </div>
                     </div>
                 {% endfor %}
-                </div>
+            </div>
         </div>
     {% else %}
         <p>no product  yet</p>

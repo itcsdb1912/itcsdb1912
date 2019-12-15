@@ -31,7 +31,7 @@ def index():
 def list_products():
     if (session.get('user')):
         products = shopifyctrl.get_products()
-        return render_template('list_products', products=products)
+        return render_template('list_products.html', products=products)
     else:
         return redirect(url_for('index'));
 

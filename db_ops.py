@@ -76,16 +76,10 @@ class database:
                 
     def add_product(self, storeid, product):
         with self.connection.cursor() as cursor:
-
-            # insert to products
-            with self.connection.cursor() as cursor:
-                sql = "INSERT INTO ProductInfo"
-            # save product_id
-
             # insert to variants with saved product_id
 
             # Read a single record
-            sql = "SELECT ProductName FROM ProductInfo WHERE ProductName=%s"
+            sql = "SELECT ProductName FROM Product WHERE ProductName=%s"
             cursor.execute(sql, (name,))
             result = cursor.fetchone()
         if result == None:
@@ -241,6 +235,26 @@ class database:
             print("Entered variant cannot be found.")
             return False
 
+    def get_store(self, id):
+        if id != None:
+            sql = "SELECT * FROM Store WHERE Id=%s"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,)
+                result = cursor.fetchone()
+            if result != None:
+                return {'err':None, 'msg': 'Data collected.', 'store':{'id':result[0], 
+                                                                        'apikey':result[1], 
+                                                                        'password':result[2],
+                                                                        'storename':result[3],
+                                                                        'address':result[4],
+                                                                        'timestamp':result[5],
+                                                                        'userid':result[6],
+                                                                        'isactivated':result[7]}}
+            else:
+                return {'err':'Id cannot be found.'}
+                
+        else:
+            return {'err':'Id is null.'}
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -366,8 +380,12 @@ db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Store")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
+print(db.get_store())
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
+
+
+
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

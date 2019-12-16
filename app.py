@@ -118,15 +118,26 @@ def store_with_id(store_id):
         else:
             return redirect(url_for("index"))
             
-@app.route('/product/<int:product_id>')
+@app.route('/product/<int:product_id>', methods=["GET", "POST"])
 def product(product_id):
     print(product_id)
     user = session.get('user')
-    if (user):
-        p = shopifyctrl.get_product(int(product_id))
-        return render_template('product.html', product=p, user=user)
+
+    if(request.method == "GET"):
+        if (user):
+            p = shopifyctrl.get_product(int(product_id))
+            return render_template('product.html', product=p, user=user)
+        else:
+            return redirect(url_for('index'))
     else:
-        return redirect(url_for('index'));
+        if(user):
+            name = request.form.get("title")
+            price = request.form.get("price")
+            stock = request.form.get("stock")
+
+            result = db.update_product(product_id)
+        else:
+            return redirect(url_for('index'))
 
 @app.route('/change_password', methods=["GET", "POST"])
 def change_password():
@@ -147,6 +158,7 @@ def change_password():
                 return redirect(url_for("account"))
     else:
         return redirect(url_for("index"))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

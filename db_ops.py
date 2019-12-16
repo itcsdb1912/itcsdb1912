@@ -74,26 +74,7 @@ class database:
                 print("This store name exists. Please pick another name.")
                 return {'err': 'Store name exists.'}
                 
-    def add_product(self, storeid, product):
-        with self.connection.cursor() as cursor:
-            # insert to variants with saved product_id
 
-            # Read a single record
-            sql = "SELECT ProductName FROM Product WHERE ProductName=%s"
-            cursor.execute(sql, (name,))
-            result = cursor.fetchone()
-        if result == None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "INSERT INTO ProductInfo (ProductName, ProductCategory, ProductPrice, ProductDiscount, StoreId) \
-                    VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(sql, (name, category, price, discount, storeid))
-            self.connection.commit()
-            print("You have successfully created a product.")
-            return True
-        else:
-            print("This product name exists. Please pick another name.")
-            return False
     def add_variant(self, productid, stock, color="default", size="default", material="default"):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -239,7 +220,7 @@ class database:
         if id != None:
             sql = "SELECT * FROM Store WHERE Id=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,)
+                cursor.execute(sql,(id,))
                 result = cursor.fetchone()
             if result != None:
                 return {'err':None, 'msg': 'Data collected.', 'store':{'id':result[0], 
@@ -255,6 +236,7 @@ class database:
                 
         else:
             return {'err':'Id is null.'}
+    
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -380,7 +362,7 @@ db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Store")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
-print(db.get_store())
+print(db.get_store(1))
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 

@@ -54,7 +54,8 @@ SQL_QUERIES = {
 
     "new_store": "INSERT INTO Store (StoreName, Address, UserId, ApiKey, Password) VALUES (%s, %s, %s, %s, %s)",
 
-    "add_product": "",
+    "add_product": "INSERT INTO ProductInfo (Id, ProductName, ProductPrice, ProductDescription, StoreId) \
+                    VALUES (%s, %s, %s, %s, %s)",
 
     "add_variant": "",
 

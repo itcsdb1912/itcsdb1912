@@ -365,6 +365,7 @@ db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Store")
 db.change_password(1, "secret2", "changedsecret")
+db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 #uid = user, sid = store, pid = product, vid = variant

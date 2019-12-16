@@ -60,12 +60,12 @@ class database:
             else:
                 print("Wrong password.")
                 return {'err': 'Wrong password.'}
-    def new_store(self, userid, name, address):
+    def new_store(self, userid, name, address, apikey='default', password='default'):
         with self.connection.cursor() as cursor:
             try:
                 # Create a new record
                 sql = SQL_QUERIES['new_store']
-                cursor.execute(sql, (name, address, userid,))
+                cursor.execute(sql, (name, address, userid, apikey, password))
                 self.connection.commit()
                 print("You have successfully opened a store.")
                 return {'err': None, 'msg': 'Store is opened.'}

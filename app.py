@@ -186,17 +186,25 @@ def account():
 
     if(request.method == "GET"):
         if (user):
-            result = db.get_store(1)
-            stores = [result["store"]]
-            print(stores[0]["storename"])
-            return render_template('account.html', user=user, stores=stores)
+            store_result = db.get_store()
+            stores = store_result["data"]
+            
+            user_result = db.get_user(user["id"])
+            user_data = user_result["data"]
+
+            print(user_data)
+
+            return render_template('account.html', user=user_data, stores=stores)
         else:
             return redirect(url_for("index"))
     else:
         username = request.form.get("username")
         email = request.form.get("email")
 
-        result = db.update_user(user["id"], username, email)
+        user_result = db.get_user(user["id"])
+        user_data = user_result["data"]
+
+        result = db.update_user(user_data["id"], username, email)
 
         return redirect(url_for("account"))
 

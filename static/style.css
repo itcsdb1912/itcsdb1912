@@ -54,6 +54,11 @@ header {
     border-bottom: 1px solid #ccc;
 }
 
+header nav {
+    max-width: 1200px;
+    margin: auto;
+}
+
 header nav ul{
     display: flex;
     flex-direction: row;

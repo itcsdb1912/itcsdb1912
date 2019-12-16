@@ -77,6 +77,15 @@ input[type="submit"]:hover {
     background: #eee;
 }
 
+.form_input {
+    display: flex;
+    align-items: center;
+}
+
+.form_input input {
+    flex: 100%;
+}
+
 .content {
     display: flex;
     max-width: 1200px;
@@ -87,7 +96,7 @@ input[type="submit"]:hover {
 
 @media (max-width: 479px) {
     .content {
-        padding: 0 24px;
+        padding: 36px 24px;
     }
 }
 
@@ -122,19 +131,28 @@ input[type="submit"]:hover {
 }
 
 
+#ProductDetail {
+    width: 100%;
+}
+
 #ProductDetail .product_detail__wrapper {
     display: flex;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
 }
 
-#ProductDetail .product_detail__wrapper .side_image {
-    max-width: 200px;
+#ProductDetail .product_detail__wrapper .side_image img{
+    max-width: 300px;
+}
+
+#ProductDetail .product_detail__wrapper .side_detail {
+    margin-left: 24px;
 }
 
 #ProductDetail .product_detail__wrapper .side_image,
 #ProductDetail .product_detail__wrapper .side_detail { 
-    flex: 50%;
     min-width: 300px;
 }

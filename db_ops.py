@@ -72,9 +72,26 @@ class database:
             except:
                 self.connection.rollback()
                 print("This store name exists. Please pick another name.")
-                return {'err': 'Store name exists.'}
-                
+                return {'err': 'Store name exists.'}            
+    def add_product(self, storeid, product):
+        # insert to variants with saved product_id
+        try:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = SQL_QUERIES['add_product']
+                cursor.execute(sql, (product['id'],
+                                    product['title'],
+                                    product['price'],
+                                    product['description'],
+                                    product['store_id'],))
 
+            self.connection.commit()
+            print("You have successfully created a product.")
+            return {'err':None,'msg':'You have successfully created a product.'}
+        except:
+            print("This product exists.")
+            return {'err':'This product exists.'}
+        
     def add_variant(self, productid, stock, color="default", size="default", material="default"):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -359,10 +376,30 @@ db.connect_db()
 db.create_tables()
 db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
-db.get_data("Store")
+db.get_data("Account")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 print(db.get_store(1))
+product = {
+        "id": 234234,
+        "title": "Test Product",
+        "price": 99.00,
+        "description": "lorem ipsum",
+        "store_id": 1,
+        "variants": [
+            {
+                "id": 54634,
+                "product_id": 2344,
+                "sku": "SKWE-234",
+                "stock": 324,
+                "compare_at_price": 88,
+                "price": 99
+            }
+        ]
+        
+    }
+
+db.add_product(1,product)
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 

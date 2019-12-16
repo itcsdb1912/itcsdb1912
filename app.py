@@ -186,9 +186,9 @@ def account():
 
     if(request.method == "GET"):
         if (user):
-            result = db.get.store()
-            print(result)
-            stores = None
+            result = db.get_store(1)
+            stores = [result["store"]]
+            print(stores[0]["storename"])
             return render_template('account.html', user=user, stores=stores)
         else:
             return redirect(url_for("index"))

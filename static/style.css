@@ -44,6 +44,11 @@ ul li {
     justify-content: space-between;
 }
 
+.buttons_line {
+    display: flex;
+    justify-content: space-between;
+}
+
 header {
     background: #fff;
     border-bottom: 1px solid #ccc;
@@ -124,12 +129,6 @@ input[type="submit"]:hover {
 #ProductList .product_list .product_item .side_text {
     width: 100%;
 }
-
-#ProductList .product_list .product_item .side_text .buttons {
-    display: flex;
-    justify-content: space-between;
-}
-
 
 #ProductDetail {
     width: 100%;

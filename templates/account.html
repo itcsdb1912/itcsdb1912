@@ -31,21 +31,27 @@
             <a href="/store">+Add Store</a>
         </div>
         <div>
-            {% if stores%}
+            {% if stores %}
                 {% for s in stores %}
                     <div class="card">
                         <div class="store_item ">
-                            <p>{{s.name}}</p>
-                            <p>{{s.address}}</p>
-                            <a href="/store/{{s.id}}">View</a>
-                            <a href="/store/{{s.id}}/activate"></a>
-                            <a href="/store/{{s.id}}/delete">Delete</a>
+                            <p>{{s.storename}}</p>
+                            <p>Address: {{s.address}}</p>
+                            <div class="buttons_line">
+                                <a href="/store/{{s.id}}">View</a>
+                                {% if s.isActivated == 1 %}
+                                    <a href="/store/{{s.id}}/deactivate"> Deactivate</a>
+                                {% else %}
+                                    <a href="/store/{{s.id}}/activate"> Activate</a>
+                                {% endif %}
+                                
+                                <a href="/store/{{s.id}}/delete">Delete</a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-
-                    <h3>No stores yet.</h3>
+                <h3>No stores yet.</h3>
             {% endif %}
         </div>
     </div>

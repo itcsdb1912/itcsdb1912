@@ -79,10 +79,9 @@ def logout():
         session.clear()
     return redirect(url_for('index'))
 
-@app.route('/account')
+@app.route('/user')
 def user():
     return render_template('account.html')
-    
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':

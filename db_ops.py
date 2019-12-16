@@ -21,8 +21,9 @@ class database:
     def create_tables(self):
         table_list = ['create_user_table', 'create_store_table', 'create_product_table', 'create_variant_table']
         for create in table_list:
-            sql = SQL_QUERIES[create]
-            self.connection.cursor().execute(sql,)
+            with self.connection.cursor() as cursor:
+                sql = SQL_QUERIES[create]
+                cursor().execute(sql,)
             self.connection.commit()
         print("Tables ready.")
         return {"err": None, "msg": "Tables are ready to use."}
@@ -49,7 +50,7 @@ class database:
     def check_user(self, username, password):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Username, Password FROM Account WHERE Username=%s"
+            sql = "SELECT Id, Username, Password FROM Account WHERE Username=%s"
             cursor.execute(sql, (username,))
             result = cursor.fetchone()
 
@@ -59,7 +60,7 @@ class database:
         else:
             if result[1] == password:
                 print("Login successful.")
-                return {'err': None, 'msg': 'Login successful.', 'user': {"username": result[0]}}
+                return {'err': None, 'msg': 'Login successful.', 'user': {"id":result[0],"username": result[1]}}
             else:
                 print("Wrong password.")
                 return {'err': 'Wrong password.'}
@@ -305,7 +306,10 @@ class database:
             return False
 
     def drop_tables(self):
-        
+        sql_query = SQL_QUERIES['drop_tables']
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql_query,)
+        self.connection.commit()
         print("Tables deleted.")
         return {"err": None, "msg": "Tables are dropped, please create again to continue."} 
 
@@ -318,6 +322,7 @@ class database:
             print(result)
 
     # SOME UTILITY METHODS
+    
 
     def has_user(self):
         sql_query = "SELECT Id FROM Account"
@@ -328,79 +333,26 @@ class database:
             return False
         else:
             return True
-
-    def drop_tables(self):
-        sql_query = "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+    def get_schemas(self):
+        sql = "select schema_name from information_schema.schemata;"
         with self.connection.cursor() as cursor:
-            cursor.execute(sql_query,)
-        return True
-    
-    def create_user_table(self):
-        sql = SQL_QUERIES["create_user_table"]
-        self.connection.cursor().execute(sql,)
-        self.connection.commit()
-        print("User table ready.")
+            cursor.execute(sql, ())
+            result = cursor.fetchall()
+            print(result)
+    def get_tablenames(self):
+        sql = SQL_QUERIES["get_tables"]
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql, ())
+            result = cursor.fetchall()
+            print(result)
 
-    def create_store_table(self):
-        
-        sql = SQL_QUERIES["create_store_table"]
-        self.connection.cursor().execute(sql, )
-        self.connection.commit()
-        print("Store table ready.")
-
-    def create_product_table(self):
-    
-        sql = SQL_QUERIES["create_product_table"]
-        self.connection.cursor().execute(sql,)
-        self.connection.commit()
-        print("Product table ready")
-
-    def create_variant_table(self):
-        
-        sql = SQL_QUERIES["create_variant_table"]
-        self.connection.cursor().execute(sql, )
-        self.connection.commit()
-        print("Variant table ready.")
-def test_case():
-    db = database()
-    db.connect_db()
-    db.create_user_table()
-    db.create_store_table()
-    db.signup('test@sample.com', 'testsecret')
-    db.login('test@sample.com', 'testsecret')
-
-    uid = 1
-    sid = 2
-    pid = 3
-    vid = 5
-
-    db.new_store(uid,"Test Store 2", "İTÜ Gümüşsuyu")
-    db.new_store(uid,"Test Store 1", "İTÜ Taşkışla")
-
-    db.create_product_table()
-    db.create_variant_table()
-    db.add_product(sid, "sampletrend", "test", 15.5, 0)
-
-    db.add_variant(pid, 800, color="Yellow", size="XL")
-
-    db.change_email(uid,"changed2@sample.com")
-    db.change_Name(sid, "testchangename")
-    db.change_storeaddress(sid, "İTÜ Tuzla")
-    db.change_password(uid, "testchanged")
-    db.change_productprice(pid, 322.85)
-    db.change_productdiscount(pid, 0.15)
-    db.update_variantstock(vid, 11)
-
-    #db.delete_store(sid)
-    #db.delete_variant(vid)
-    #db.delete_account(uid)
-    #db.delete_product(pid)
-
-#test_case()
 
 db = database()
 db.connect_db()
-db.get_data()
+db.drop_tables()
+#db.get_schemas()
+#db.get_tablenames()
+#db.get_data()
 
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table

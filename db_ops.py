@@ -5,128 +5,74 @@ import psycopg2
 import json
 from datetime import datetime
 from urllib.parse import urlparse
+from SQL_QUERIES import SQL_QUERIES
 
 class database:
     def __init__(self):
         self.connection = None
-        self.connect_info = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
+        self.url = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
     def connect_db(self):
         try:
-            self.connection = psycopg2.connect(database = self.connect_info.path[1:],
-                                                user = self.connect_info.username,
-                                                password = self.connect_info.password,
-                                                host = self.connect_info.hostname)
+            self.connection = psycopg2.connect(database = self.url.path[1:],
+                                                user = self.url.username,
+                                                password = self.url.password,
+                                                host = self.url.hostname)
             #self.connection = pymysql.connect(host='remotemysql.com',user='Y2twfztOBJ',password='sDi9LakvoN',db='Y2twfztOBJ')
             print("Connected!")
             return self.connection
         except:
             print("Connection Failed")
             return False
-    
-    def create_user_table(self):
 
-        sql = "CREATE TABLE IF NOT EXISTS UserInfo(\
-            Id SERIAL PRIMARY KEY,\
-            Email VARCHAR(50) NOT NULL,\
-            CreatedOn timestamp without time zone DEFAULT now(),\
-            AccountPassword VARCHAR(25) NOT NULL );"
-        self.connection.cursor().execute(sql,)
-        self.connection.commit()
-        print("User table ready.")
-    def create_store_table(self):
-        
-        sql = "CREATE TABLE IF NOT EXISTS StoreInfo(\
-            Id SERIAL PRIMARY KEY,\
-            StoreName VARCHAR(50) NOT NULL,\
-            StoreAddress VARCHAR(100) NOT NULL,\
-            CreatedOn timestamp without time zone DEFAULT now(),\
-            UserId INTEGER NOT NULL,\
-            CONSTRAINT user_store\
-                FOREIGN KEY (UserId)\
-                REFERENCES UserInfo (Id)\
-                ON DELETE CASCADE);"
-        self.connection.cursor().execute(sql, )
-        self.connection.commit()
-        print("Store table ready.")
-    def create_product_table(self):
-    
-        sql = "CREATE TABLE IF NOT EXISTS ProductInfo(\
-            Id SERIAL PRIMARY KEY,\
-            ProductName VARCHAR(50) NOT NULL,\
-            ProductCategory VARCHAR(50) NOT NULL,\
-            ProductPrice FLOAT NOT NULL,\
-            ProductDiscount FLOAT NOT NULL,\
-            CreatedOn timestamp without time zone DEFAULT now(),\
-            StoreId INTEGER NOT NULL,\
-            CONSTRAINT store_product\
-                FOREIGN KEY (StoreId)\
-                REFERENCES StoreInfo (Id)\
-                ON DELETE CASCADE);"
-        self.connection.cursor().execute(sql,)
-        self.connection.commit()
-        print("Product table ready")
-    def create_variant_table(self):
-        
-        sql = "CREATE TABLE IF NOT EXISTS ProductVariantInfo(\
-            Id SERIAL PRIMARY KEY,\
-            Color VARCHAR(15),\
-            Size VARCHAR(10),\
-            Material VARCHAR(25),\
-            Stock INTEGER NOT NULL,\
-            CreatedOn timestamp without time zone DEFAULT now(),\
-            ProductId INTEGER NOT NULL,\
-            CONSTRAINT product_variant\
-                FOREIGN KEY (ProductId)\
-                REFERENCES ProductInfo (Id)\
-                ON DELETE CASCADE);"
-        self.connection.cursor().execute(sql, )
-        self.connection.commit()
-        print("Variant table ready.")
 
-    def signup(self, email, password):      
+    def create_user(self, username, email, password):      
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id, AccountPassword FROM UserInfo WHERE Email=%s"
-            cursor.execute(sql, (email,))
+            sql = "SELECT Id, Password FROM Account WHERE Username=%s"
+            cursor.execute(sql, (username,))
             result = cursor.fetchone()
         if result == None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "INSERT INTO UserInfo (Email, AccountPassword) VALUES (%s, %s)"
-                cursor.execute(sql, (email, password))
+                sql = "INSERT INTO Account (Username, Email, Password) VALUES (%s, %s, %s)"
+                cursor.execute(sql, (username, email, password))
+                user = cursor.fetchone()
+                print(user)
             self.connection.commit()
             print("You have successfully signed up.")
-            return True
+            return {"err": None, "msg": "You have successfully signed up."}
         else:
-            print("This email address belongs to another account.")
-            return False
-    def login(self, email, password):
+            print("Username has taken")
+            return {"err": "Username has taken"}
+            
+    def check_user(self, username, password):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Email, AccountPassword FROM UserInfo WHERE Email=%s"
-            cursor.execute(sql, (email,))
+            sql = "SELECT Username, Password FROM Account WHERE Username=%s"
+            cursor.execute(sql, (username,))
             result = cursor.fetchone()
 
         if result == None:
-            print("Email address not found.")
-            return False
+            print("User not found.")
+            return {'err': 'User not found.' }
         else:
             if result[1] == password:
                 print("Login successful.")
-                return True
+                return {'err': None, 'msg': 'Login successful.', 'user': {"username": result[0]}}
             else:
                 print("Wrong password.")
-                return False
+                return {'err': 'Wrong password.'}
+
     def new_store(self, userid, name, address):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT StoreName FROM StoreInfo WHERE StoreName=%s"
+            sql = "SELECT Name FROM Store WHERE Name=%s"
             cursor.execute(sql, (name,))
             result = cursor.fetchone()
         if result == None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "INSERT INTO StoreInfo (StoreName, StoreAddress, UserId) \
+                sql = "INSERT INTO Store (Name, Address, Id) \
                     VALUES (%s, %s, %s)"
                 cursor.execute(sql, (name, address, userid))
             self.connection.commit()
@@ -175,17 +121,17 @@ class database:
     def change_email(self, id, newemail):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM UserInfo WHERE Id=%s"
+            sql = "SELECT Id FROM Account WHERE Id=%s"
             cursor.execute(sql, (id,))
             result = cursor.fetchone()
-            sql = "SELECT Id FROM UserInfo WHERE Email=%s"
+            sql = "SELECT Id FROM Account WHERE Email=%s"
             cursor.execute(sql, (newemail,))
             emailexists = cursor.fetchone()
         if result != None:
             if emailexists == None:
                 with self.connection.cursor() as cursor:
                     # Create a new record
-                    sql = "UPDATE UserInfo SET Email=%s WHERE Id=%s"
+                    sql = "UPDATE Account SET Email=%s WHERE Id=%s"
                     cursor.execute(sql, (newemail,id))
                 self.connection.commit()
                 print("Email address successfully updated.")
@@ -199,13 +145,13 @@ class database:
     def change_password(self, id, newpassword):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT AccountPassword FROM UserInfo WHERE Id=%s"
+            sql = "SELECT Password FROM Account WHERE Id=%s"
             cursor.execute(sql, (id,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "UPDATE UserInfo SET AccountPassword=%s WHERE Id=%s"
+                sql = "UPDATE Account SET Password=%s WHERE Id=%s"
                 cursor.execute(sql, (newpassword,id))
             self.connection.commit()
             print("Password successfully updated.")
@@ -213,47 +159,27 @@ class database:
         else:
             print("Email address does not exist.")
             return False
-    def change_storename(self, id, newname):
+    def update_store(self, id, name, address):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM StoreInfo WHERE Id=%s"
+            sql = "SELECT Id FROM Store WHERE Id=%s"
             cursor.execute(sql, (id,))
             result = cursor.fetchone()
-            sql = "SELECT Id FROM StoreInfo WHERE StoreName=%s"
-            cursor.execute(sql, (newname,))
+            sql = "SELECT Id FROM Store WHERE Name=%s"
+            cursor.execute(sql, (name,))
             nameexists = cursor.fetchone()
         if result != None:
-            if nameexists == None:
-                with self.connection.cursor() as cursor:
-                    # Create a new record
-                    sql = "UPDATE StoreInfo SET StoreName=%s WHERE Id=%s"
-                    cursor.execute(sql, (newname,id))
-                self.connection.commit()
-                print("Store name successfully updated.")
-                return True
-            else:
-                print("Entered store name already exists.")
-                return False
-        else:
-            print("Id does not exist.")
-            return False
-    def change_storeaddress(self, id, newaddress):
-        with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM StoreInfo WHERE Id=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-        if result != None:
             with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "UPDATE StoreInfo SET StoreAddress=%s WHERE Id=%s"
-                cursor.execute(sql, (newaddress,id))
+                    # Create a new record
+                    sql = "UPDATE Store SET StoreAddress=%s Name=%s WHERE Id=%s"
+                    cursor.execute(sql, (name, address, id))
             self.connection.commit()
-            print("Store address successfully updated.")
+            print("Store name successfully updated.")
             return True
         else:
-            print("Entered store cannot be found.")
+            print("Store does not exist.")
             return False
+            
     def change_productprice(self, id, newprice):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -309,13 +235,13 @@ class database:
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM UserInfo WHERE Id=%s"
+            sql = "SELECT Id FROM Account WHERE Id=%s"
             cursor.execute(sql, (userid,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "DELETE FROM UserInfo WHERE Id=%s"
+                sql = "DELETE FROM Account WHERE Id=%s"
                 cursor.execute(sql, (userid,))
             self.connection.commit()
             print("User successfully deleted.")
@@ -326,13 +252,13 @@ class database:
     def delete_store(self, storeid):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM StoreInfo WHERE Id=%s"
+            sql = "SELECT Id FROM Store WHERE Id=%s"
             cursor.execute(sql, (storeid,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "DELETE FROM StoreInfo WHERE Id=%s"
+                sql = "DELETE FROM Store WHERE Id=%s"
                 cursor.execute(sql, (storeid,))
             self.connection.commit()
             print("Store successfully deleted.")
@@ -378,11 +304,61 @@ class database:
     def get_data(self):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT * FROM UserInfo"
+            sql = "SELECT * FROM Account"
             cursor.execute(sql, ())
             result = cursor.fetchall()
             print(result)
 
+    # INITIALIZING DB AND SOME UTILITY METHODS
+
+    def create_tables(self):
+        self.create_user_table()
+        self.create_store_table()
+        self.create_product_table()
+        self.create_variant_table()
+
+    def has_user(self):
+        sql_query = "SELECT Id FROM Account"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql_query,)
+            result = cursor.fetchone()
+        if result == None:
+            return False
+        else:
+            return True
+
+    def drop_tables(self):
+        sql_query = "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql_query,)
+        return True
+    
+    def create_user_table(self):
+        sql = SQL_QUERIES["create_user_table"]
+        self.connection.cursor().execute(sql,)
+        self.connection.commit()
+        print("User table ready.")
+
+    def create_store_table(self):
+        
+        sql = SQL_QUERIES["create_store_table"]
+        self.connection.cursor().execute(sql, )
+        self.connection.commit()
+        print("Store table ready.")
+
+    def create_product_table(self):
+    
+        sql = SQL_QUERIES["create_product_table"]
+        self.connection.cursor().execute(sql,)
+        self.connection.commit()
+        print("Product table ready")
+
+    def create_variant_table(self):
+        
+        sql = SQL_QUERIES["create_variant_table"]
+        self.connection.cursor().execute(sql, )
+        self.connection.commit()
+        print("Variant table ready.")
 def test_case():
     db = database()
     db.connect_db()
@@ -406,7 +382,7 @@ def test_case():
     db.add_variant(pid, 800, color="Yellow", size="XL")
 
     db.change_email(uid,"changed2@sample.com")
-    db.change_storename(sid, "testchangename")
+    db.change_Name(sid, "testchangename")
     db.change_storeaddress(sid, "İTÜ Tuzla")
     db.change_password(uid, "testchanged")
     db.change_productprice(pid, 322.85)

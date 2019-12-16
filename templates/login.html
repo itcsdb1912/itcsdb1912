@@ -2,14 +2,22 @@
 
 {% block content %}
 <div>
+    <h2>You have already a store, please login</h2>
     <div>
         <form action="/login" method="POST">
-            <label for="username">Username</label>
-            <input type="text" name="username">
-            <label for="password">Password</label>
-            <input type="text" name="password">
-            <input type="submit" value="LOGIN">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" name="username">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="text" name="password">
+            </div>
+            <div>
+                <input type="submit" value="LOGIN">
+            </div>
         </form>
     </div>
+    <p class="error">{{err}}</p>
 </div>
 {% endblock %}

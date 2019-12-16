@@ -12,8 +12,10 @@
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/list_products">List Products</a></li>
-                <li><a href="/logout">Logout</a></li>
+                {% if user %}
+                    <li><a href="/list_products">List Products</a></li>
+                    <li><a href="/logout">Logout ({{ user.username }})</a></li>
+                {% endif %}
             </ul>
         </nav>    
     </header>

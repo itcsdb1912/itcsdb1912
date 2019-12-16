@@ -28,6 +28,10 @@ ul li {
     list-style: none;
 }
 
+.error {
+    color: red;
+}
+
 header {
     background: #eee;
 }
@@ -78,6 +82,10 @@ header nav ul li {
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+}
+
+#ProductDetail .product_detail__wrapper .side_image {
+    max-width: 200px;
 }
 
 #ProductDetail .product_detail__wrapper .side_image,

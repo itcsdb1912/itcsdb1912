@@ -70,7 +70,7 @@ def store():
             return redirect(url_for('index'))
     else:
         if(user):
-            user_id = user.id    
+            user_id = user["id"]    
             store_name = request.form.get("store_name")
             store_address = request.form.get("store_address")
             store_api_key = request.form.get("store_api_key")
@@ -107,7 +107,7 @@ def store_with_id(store_id):
             return redirect(url_for("index"))
     else:
         if(user):
-            user_id = user.id    
+            user_id = user["id"]    
             name = request.form.get("store_name")
             address = request.form.get("store_address")
             api_key = request.form.get("store_api_key")
@@ -150,12 +150,12 @@ def change_password():
             old_password = request.form.get("old_password")
             new_password = request.form.get("new_password")
 
-            result = db.change_password(user.id, old_password, new_password)
+            result = db.change_password(user["id"], old_password, new_password)
 
-            if (result.err):
-                return render_template("change_password.html", err=result.err, user=user)
+            if (result["err"]):
+                return render_template("change_password.html", err=result["err"], user=user)
             else:
-                return redirect(url_for("account"))
+                return redirect(url_for('account'))
     else:
         return redirect(url_for("index"))
 
@@ -181,10 +181,12 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/account')
-def user():
+def account():
     user = session.get('user')
     if (user):
-        return render_template('account.html', user=user, stores=None)
+        #result = db.get.store()
+        stores = None
+        return render_template('account.html', user=user, stores=stores)
     else:
         return redirect(url_for("index"))
 

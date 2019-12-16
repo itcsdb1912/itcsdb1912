@@ -3,29 +3,32 @@
 {% block content %}
 <div>
     <div>
-        <h2>Account Details</h2>
-        <form action="/account" method="POST">
-            <div>
-                <label for="username">Username</label>
-                <input type="text" name="username" value="{{user.username}}">
-            </div>
-            <div>
-                <label for="email">Email</label>
-                <input type="text" name="email" value="{{user.email}}">
-            </div>
-            <div>
-                <input type="submit" value="UPDATE">
-            </div>
-        </form>
-        <a href="/change_password">Change Password</a>
+        <div class="header_line">
+            <h2>Account Details</h2>
+            <a href="/change_password">Change Password</a>
+        </div>
+        <div class="card">
+            <form action="/account" method="POST">
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" name="username" value="{{user.username}}">
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="text" name="email" value="{{user.email}}">
+                </div>
+                <div>
+                    <input type="submit" value="UPDATE">
+                </div>
+            </form>
+        </div>
     </div>
 
-    <hr>
 
     <div>
-        <div>
+        <div class="header_line">
             <h2>Stores</h2>
-            <a href="/store">Add Store</a>
+            <a href="/store">+Add Store</a>
         </div>
         <div>
             {% if stores%}

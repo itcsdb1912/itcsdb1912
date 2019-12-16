@@ -19,7 +19,7 @@ SQL_QUERIES = {
                 REFERENCES Account (Id)\
                 ON DELETE CASCADE);",
 
-    "create_product_table": "CREATE TABLE IF NOT EXISTS ProductInfo(\
+    "create_product_table": "CREATE TABLE IF NOT EXISTS Product(\
             Id INTEGER PRIMARY KEY,\
             ProductName VARCHAR(50) NOT NULL,\
             ProductPrice FLOAT NOT NULL,\
@@ -31,7 +31,7 @@ SQL_QUERIES = {
                 REFERENCES Store (Id)\
                 ON DELETE CASCADE);",
 
-    "create_variant_table":"CREATE TABLE IF NOT EXISTS ProductVariantInfo(\
+    "create_variant_table":"CREATE TABLE IF NOT EXISTS ProductVariant(\
             Id SERIAL PRIMARY KEY,\
             Option1 VARCHAR(32),\
             Option2 VARCHAR(32),\
@@ -43,10 +43,10 @@ SQL_QUERIES = {
             ProductId INTEGER NOT NULL UNIQUE,\
             CONSTRAINT product_variant\
                 FOREIGN KEY (ProductId)\
-                REFERENCES ProductInfo (Id)\
+                REFERENCES Product (Id)\
                 ON DELETE CASCADE);",
 
-    "create_user":"",
+    "create_user": "INSERT INTO Account (Username, Email, Password) VALUES (%s, %s, %s) RETURNING Id, Username",
 
     "check_user":"",
 
@@ -62,7 +62,6 @@ SQL_QUERIES = {
 
     "update_store": "",
 
-    "get_tables": "SELECT * FROM INFORMATION_SCHEMA.TABLES",
+    "get_tables": "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES",
 
-    "drop_tables": "DROP TABLE Account CASCADE;",
 }

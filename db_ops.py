@@ -28,25 +28,21 @@ class database:
         print("Tables ready.")
         return {"err": None, "msg": "Tables are ready to use."}
 
-    def create_user(self, username, email, password):      
-        with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id, Password FROM Account WHERE Username=%s"
-            cursor.execute(sql, (username,))
-            result = cursor.fetchone()
-        if result == None:
+    def create_user(self, username, email, password):  
+        try:    
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "INSERT INTO Account (Username, Email, Password) VALUES (%s, %s, %s)"
+                sql = SQL_QUERIES['create_user']
                 cursor.execute(sql, (username, email, password))
-                user = cursor.fetchone()
-                print(user)
+                result = cursor.fetchone()
+                print(result)
             self.connection.commit()
             print("You have successfully signed up.")
-            return {"err": None, "msg": "You have successfully signed up."}
-        else:
-            print("Username has taken")
-            return {"err": "Username has taken"}     
+            return {"err": None, "msg": "You have successfully signed up."," user": {"id": result[0], "username": result[1]}}
+        except:
+            self.connection.rollback()
+            print("Username or email has taken")
+            return {"err": "Username or email has taken"}     
     def check_user(self, username, password):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -58,7 +54,7 @@ class database:
             print("User not found.")
             return {'err': 'User not found.' }
         else:
-            if result[1] == password:
+            if result[2] == password:
                 print("Login successful.")
                 return {'err': None, 'msg': 'Login successful.', 'user': {"id":result[0],"username": result[1]}}
             else:
@@ -69,11 +65,12 @@ class database:
             try:
                 # Create a new record
                 sql = SQL_QUERIES['new_store']
-                cursor.execute(sql, (name, address, userid))
+                cursor.execute(sql, (name, address, userid,))
                 self.connection.commit()
                 print("You have successfully opened a store.")
                 return {'err': None, 'msg': 'Store is opened.'}
             except:
+                self.connection.rollback()
                 print("This store name exists. Please pick another name.")
                 return {'err': 'Store name exists.'}
                 
@@ -305,25 +302,23 @@ class database:
             print("Variant deletion failed.")
             return False
 
+    # SOME UTILITY METHODS
     def drop_tables(self):
-        sql_query = SQL_QUERIES['drop_tables']
-        with self.connection.cursor() as cursor:
-            cursor.execute(sql_query,)
-        self.connection.commit()
+        table_list = ['Account', 'Store', 'Product', 'ProductVariant']
+        for table in table_list:
+            with self.connection.cursor() as cursor:
+                sql = "DROP TABLE " + table + " CASCADE"
+                cursor.execute(sql,())
+            self.connection.commit()
         print("Tables deleted.")
         return {"err": None, "msg": "Tables are dropped, please create again to continue."} 
-
-    def get_data(self):
+    def get_data(self, tablename):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT * FROM Account"
-            cursor.execute(sql, ())
+            sql = "SELECT * FROM " + tablename
+            cursor.execute(sql, )
             result = cursor.fetchall()
             print(result)
-
-    # SOME UTILITY METHODS
-    
-
     def has_user(self):
         sql_query = "SELECT Id FROM Account"
         with self.connection.cursor() as cursor:
@@ -345,7 +340,12 @@ class database:
             cursor.execute(sql, ())
             result = cursor.fetchall()
             print(result)
-
+    def get_colnames(self, tablename):
+        sql = "SELECT COLUMNS FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql, (tablename,))
+            result = cursor.fetchall()
+            print(result)
 
 db = database()
 db.connect_db()
@@ -353,7 +353,11 @@ db.connect_db()
 #db.get_schemas()
 #db.get_tablenames()
 db.create_tables()
-
+db.create_user("test4", "test4@test.com", "secret2")
+db.new_store(1, "teststore2", "Istanbul")
+db.get_data("Store")
+#db.get_colnames("store")
+#db.new_store(3, "teststore2", "Istanbul")
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

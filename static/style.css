@@ -31,7 +31,12 @@ ul li {
 .error {
     color: red;
 }
-
+.card {
+    padding: 6px 12px;
+    margin: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+}
 header {
     background: #eee;
 }
@@ -43,6 +48,13 @@ header nav ul{
 
 header nav ul li {
     padding: 24px 48px;
+}
+
+input {
+    border: none;
+    border-bottom: 1px solid grey;
+    padding: 4px 8px;
+    margin: 20px;
 }
 
 .content {
@@ -65,10 +77,6 @@ header nav ul li {
 }
 
 #ProductList .product_list .product_item {
-    padding: 6px 12px;
-    margin: 12px 12px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
     display: flex;
     flex-direction: row;
     align-items: center;

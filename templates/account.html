@@ -19,5 +19,32 @@
         </form>
         <a href="/change_password">Change Password</a>
     </div>
+
+    <hr>
+
+    <div>
+        <div>
+            <h2>Stores</h2>
+            <a href="/store">Add Store</a>
+        </div>
+        <div>
+            {% if stores%}
+                {% for s in stores %}
+                    <div class="card">
+                        <div class="store_item ">
+                            <p>{{s.name}}</p>
+                            <p>{{s.address}}</p>
+                            <a href="/store/{{s.id}}">View</a>
+                            <a href="/store/{{s.id}}/activate"></a>
+                            <a href="/store/{{s.id}}/delete">Delete</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+
+                    <h3>No stores yet.</h3>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

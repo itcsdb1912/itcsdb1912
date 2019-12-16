@@ -46,10 +46,56 @@ def list_products():
         products = shopifyctrl.get_products()
         return render_template('list_products.html', products=products, user=user)
     else:
-        return redirect(url_for('index'));
+        return redirect(url_for('index'))
 
+@app.route('/store',  methods=["GET", "POST"])
+def store():
+    user = session.get('user')
+
+    if (request.method == "GET"):
+        if(user):
+            return render_template('store.html', user=user)
+        else:
+            return redirect(url_for('index'))
+    else:
+        if(user):
+            user_id = user.id    
+            store_name = request.form.get("store_name")
+            store_address = request.form.get("store_address")
+            store_api_key = request.form.get("store_api_key")
+            store_password = request.form.get("store_password")
+
+            db.new_store(user_id, store_name, store_address, store_api_key, store_password)
+            return redirect(url_for("account"))
+        else:
+            return redirect(url_for("index"))
+
+@app.route('/store/<int:store_id>',  methods=["GET", "POST"])
+def store_with_id(store_id):
+    user = session.get('user')
+
+    if (request.method == "GET"):
+        if(user):
+            store = db.get_store(store_id)
+            return render_template('store', user=user, store=store)
+        else:
+            return redirect(url_for("index"))
+    else:
+        if(user):
+            user_id = user.id    
+            name = request.form.get("store_name")
+            address = request.form.get("store_address")
+            api_key = request.form.get("store_api_key")
+            password = request.form.get("store_password")
+
+            db.update_store(store_id, user_id, name, address, api_key, password)
+            return redirect(url_for("account"))
+        else:
+            return redirect(url_for("index"))
+            
 @app.route('/product/<int:product_id>')
 def product(product_id):
+    print(product_id)
     user = session.get('user')
     if (user):
         p = shopifyctrl.get_product(int(product_id))
@@ -79,9 +125,14 @@ def logout():
         session.clear()
     return redirect(url_for('index'))
 
-@app.route('/user')
+@app.route('/account')
 def user():
-    return render_template('account.html')
+    user = session.get('user')
+    if (user):
+        return render_template('account.html', user=user, stores=None)
+    else:
+        return redirect(url_for("index"))
+
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':

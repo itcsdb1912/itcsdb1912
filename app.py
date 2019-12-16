@@ -50,8 +50,8 @@ def sync():
 def drop_tables():
     return render_template("index.html")
 
-@app.route('/list_products')
-def list_products():
+@app.route('/products')
+def products():
     user = session.get('user')
     if (user):
         products = shopifyctrl.get_products()

@@ -1,17 +1,21 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div>
+<div id="ProductDetail">
     {% if product %}
-        <div>
-            <img style="max-width: 64px;" src="{{product.image.src}}" alt="">
-            <form action="/update_product">
-                <label for="title">Title:</label>
-                <input type="text" name="title" value="{{product.title}}">
-                <label for="stock">Stock</label>
-                <input type="text" name="stock" value="{{product.variants[0].inventory_quantity}}">
-                <input type="submit" value="UPDATE">    
-            </form>
+        <div class="product_detail__wrapper">
+            <div class="side_image">
+                <img src="{{product.image.src}}" alt="">
+            </div>
+            <div class="side_detail">
+                <form action="/update_product">
+                    <label for="title">Title:</label>
+                    <input type="text" name="title" value="{{product.title}}">
+                    <label for="stock">Stock</label>
+                    <input type="text" name="stock" value="{{product.variants[0].inventory_quantity}}">
+                    <input type="submit" value="UPDATE">    
+                </form>
+            </div>
         </div>
     {% else %}
         <h1>wrong product_id</h1>

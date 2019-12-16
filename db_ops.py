@@ -2,8 +2,6 @@ import psycopg2
 #if db is postgres
 #import pymysql 
 # if db is mysql
-import json
-from datetime import datetime
 from urllib.parse import urlparse
 from SQL_QUERIES import SQL_QUERIES
 

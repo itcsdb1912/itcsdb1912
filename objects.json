@@ -1,0 +1,20 @@
+{
+    "product": {
+        "id": 234234,
+        "title": "Test Product",
+        "price": 99.00,
+        "description": "lorem ipsum",
+        "store_id": 93241,
+        "variants": [
+            {
+                "id": 54634,
+                "product_id": 2344,
+                "sku": "SKWE-234",
+                "stock": 324,
+                "compare_at_price": 88,
+                "price": 99
+            }
+        ]
+        
+    }
+}

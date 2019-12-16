@@ -13,6 +13,7 @@ SQL_QUERIES = {
             Address VARCHAR(100) NOT NULL,\
             CreatedOn timestamp without time zone DEFAULT now(),\
             UserId INTEGER NOT NULL,\
+            IsActivated INTEGER DEFAULT -1,\
             CONSTRAINT user_store\
                 FOREIGN KEY (UserId)\
                 REFERENCES Account (Id)\
@@ -21,9 +22,8 @@ SQL_QUERIES = {
     "create_product_table": "CREATE TABLE IF NOT EXISTS ProductInfo(\
             Id SERIAL PRIMARY KEY,\
             ProductName VARCHAR(50) NOT NULL,\
-            ProductCategory VARCHAR(50) NOT NULL,\
             ProductPrice FLOAT NOT NULL,\
-            ProductDiscount FLOAT NOT NULL,\
+            ProductDescription VARCHAR(1024), \
             CreatedOn timestamp without time zone DEFAULT now(),\
             StoreId INTEGER NOT NULL,\
             CONSTRAINT store_product\
@@ -33,12 +33,14 @@ SQL_QUERIES = {
 
     "create_variant_table":"CREATE TABLE IF NOT EXISTS ProductVariantInfo(\
             Id SERIAL PRIMARY KEY,\
-            Color VARCHAR(15),\
-            Size VARCHAR(10),\
-            Material VARCHAR(25),\
+            Option1 VARCHAR(32),\
+            Option2 VARCHAR(32),\
+            Option3 VARCHAR(32),\
             Stock INTEGER NOT NULL,\
+            Sku VARCHAR(32),\
+            CompareAtPrice FLOAT,\
             CreatedOn timestamp without time zone DEFAULT now(),\
-            ProductId INTEGER NOT NULL,\
+            ProductId INTEGER NOT NULL UNIQUE,\
             CONSTRAINT product_variant\
                 FOREIGN KEY (ProductId)\
                 REFERENCES ProductInfo (Id)\

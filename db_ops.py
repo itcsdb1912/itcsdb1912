@@ -79,8 +79,16 @@ class database:
         else:
             print("This store name exists. Please pick another name.")
             return False
-    def add_product(self, storeid, name, category, price, discount):
+    def add_product(self, storeid, product):
         with self.connection.cursor() as cursor:
+
+            # insert to products
+            with self.connection.cursor() as cursor:
+                sql = "INSERT INTO ProductInfo"
+            # save product_id
+
+            # insert to variants with saved product_id
+
             # Read a single record
             sql = "SELECT ProductName FROM ProductInfo WHERE ProductName=%s"
             cursor.execute(sql, (name,))

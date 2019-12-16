@@ -91,9 +91,9 @@ class database:
             print("You have successfully created a product.")
             return {'err':None,'msg':'You have successfully created a product.'}
         except:
+            self.connection.rollback()
             print("This product exists.")
             return {'err':'This product exists.'}
-        
     def add_variant(self, variant):
         with self.connection.cursor() as cursor:
             # Create a new record
@@ -108,9 +108,10 @@ class database:
                                 variant['product_id'],))
         self.connection.commit()
         print("You have successfully added a variant.")
-        return True
+        return {'err':None,'msg':'You have successfully added a variant.'}
 
-
+    def update_user(self, id, username, email):
+        return id
     def change_email(self, id, newemail):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -240,7 +241,7 @@ class database:
                 cursor.execute(sql,(id,))
                 result = cursor.fetchone()
             if result != None:
-                return {'err':None, 'msg': 'One store data collected.', 'stores':{'id':result[0], 
+                return {'err':None, 'msg': 'One store data collected.', 'data':{'id':result[0], 
                                                                         'apikey':result[1], 
                                                                         'password':result[2],
                                                                         'storename':result[3],
@@ -256,9 +257,9 @@ class database:
             with self.connection.cursor() as cursor:
                 cursor.execute(sql,())
                 result = cursor.fetchall()
-            message = {'err':None, 'msg': 'All store data collected.', 'stores': []}
+            message = {'err':None, 'msg': 'All store data collected.', 'data': []}
             for store in result:
-                message['stores'].append({'id':store[0], 
+                message['data'].append({'id':store[0], 
                                             'apikey':store[1], 
                                             'password':store[2],
                                             'storename':store[3],
@@ -267,7 +268,22 @@ class database:
                                             'userid':store[6],
                                             'isactivated':store[7]})
             return message
-    
+    def get_user(self, id):
+        if id != None:
+            sql = "SELECT * FROM Account WHERE Id=%s"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,(id,))
+                result = cursor.fetchone()
+            if result != None:
+                return {'err':None, 'msg': 'One user data collected.', 'data':{'id':result[0], 
+                                                                        'username':result[1], 
+                                                                        'email':result[2],
+                                                                        'timestamp':result[3],
+                                                                        'password':result[4]}}
+            else:
+                return {'err':'Id cannot be found.'}
+
+
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -390,12 +406,12 @@ db.connect_db()
 db.create_tables()
 db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
-db.get_data("ProductVariant")
+db.get_data("Store")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
-print(db.get_store(1))
+print(db.get_store())
 product = {
-        "id": 1546,
+        "id": 35468,
         "title": "Test Product",
         "price": 99.00,
         "description": "lorem ipsum",
@@ -409,13 +425,13 @@ product = {
                 "sku": "SKWE-234",
                 "stock": 324,
                 "compare_at_price": 88,
-                "product_id": 1546,
+                "product_id": 35468,
             }
         ]
         
     }
 
-db.add_product(1,product)
+#db.add_product(1,product)
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 

@@ -11,10 +11,10 @@ app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
 app.config["SESSION_TYPE"] = "redis"
 
 shopifyconfig = {
-    'API_KEY':'89845d72235b041b2768eefada433d19',
-    'PASSWORD':'be009fcef7485dd88d70d1ec24215749',
+    'API_KEY':'3ec8f9e2dbc135965075c70c0ee75e01',
+    'PASSWORD':'9b090a0649866192112b7bc40c0e359e',
     'API_VERSION':'2019-10',
-    'SHOP_NAME':'havuz-pool'
+    'SHOP_NAME':'testandrest'
 }
 shopifyctrl = shopify_controller(shopifyconfig)
 shopifyctrl.connect()

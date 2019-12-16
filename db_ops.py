@@ -86,30 +86,30 @@ class database:
                                     product['store_id'],))
 
             self.connection.commit()
+            for variant in product['variants']:
+                db.add_variant(variant)
             print("You have successfully created a product.")
             return {'err':None,'msg':'You have successfully created a product.'}
         except:
             print("This product exists.")
             return {'err':'This product exists.'}
         
-    def add_variant(self, productid, stock, color="default", size="default", material="default"):
+    def add_variant(self, variant):
         with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT * FROM ProductVariantInfo WHERE color=%s AND size=%s AND material=%s"
-            cursor.execute(sql, (color,size,material))
-            result = cursor.fetchone()
-        if result == None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "INSERT INTO ProductVariantInfo (Color, Size, Material, Stock, ProductId) \
-                    VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(sql, (color, size, material, stock, productid))
-            self.connection.commit()
-            print("You have successfully added a variant.")
-            return True
-        else:
-            print("This product variant exists with the same color, size and material type. Please choose something else.")
-            return False
+            # Create a new record
+            sql = SQL_QUERIES['add_variant']
+            cursor.execute(sql, (variant['id'], 
+                                variant['option1'], 
+                                variant['option2'], 
+                                variant['option3'], 
+                                variant['stock'],
+                                variant['sku'],
+                                variant['compare_at_price'],
+                                variant['product_id'],))
+        self.connection.commit()
+        print("You have successfully added a variant.")
+        return True
+
 
     def change_email(self, id, newemail):
         with self.connection.cursor() as cursor:
@@ -233,14 +233,14 @@ class database:
             print("Entered variant cannot be found.")
             return False
 
-    def get_store(self, id):
+    def get_store(self, id=None):
         if id != None:
             sql = "SELECT * FROM Store WHERE Id=%s"
             with self.connection.cursor() as cursor:
                 cursor.execute(sql,(id,))
                 result = cursor.fetchone()
             if result != None:
-                return {'err':None, 'msg': 'Data collected.', 'store':{'id':result[0], 
+                return {'err':None, 'msg': 'One store data collected.', 'stores':{'id':result[0], 
                                                                         'apikey':result[1], 
                                                                         'password':result[2],
                                                                         'storename':result[3],
@@ -252,7 +252,21 @@ class database:
                 return {'err':'Id cannot be found.'}
                 
         else:
-            return {'err':'Id is null.'}
+            sql = "SELECT * FROM Store"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,())
+                result = cursor.fetchall()
+            message = {'err':None, 'msg': 'All store data collected.', 'stores': []}
+            for store in result:
+                message['stores'].append({'id':store[0], 
+                                            'apikey':store[1], 
+                                            'password':store[2],
+                                            'storename':store[3],
+                                            'address':store[4],
+                                            'timestamp':store[5],
+                                            'userid':store[6],
+                                            'isactivated':store[7]})
+            return message
     
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
@@ -291,13 +305,13 @@ class database:
     def delete_product(self, productid):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM ProductInfo WHERE Id=%s"
+            sql = "SELECT Id FROM Product WHERE Id=%s"
             cursor.execute(sql, (productid,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "DELETE FROM ProductInfo WHERE Id=%s"
+                sql = "DELETE FROM Product WHERE Id=%s"
                 cursor.execute(sql, (productid,))
             self.connection.commit()
             print("Product successfully deleted.")
@@ -308,13 +322,13 @@ class database:
     def delete_variant(self, variantid):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Id FROM ProductVariantInfo WHERE Id=%s"
+            sql = "SELECT Id FROM ProductVariant WHERE Id=%s"
             cursor.execute(sql, (variantid,))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "DELETE FROM ProductVariantInfo WHERE Id=%s"
+                sql = "DELETE FROM ProductVariant WHERE Id=%s"
                 cursor.execute(sql, (variantid,))
             self.connection.commit()
             print("Variant successfully deleted.")
@@ -376,12 +390,12 @@ db.connect_db()
 db.create_tables()
 db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
-db.get_data("Account")
+db.get_data("ProductVariant")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 print(db.get_store(1))
 product = {
-        "id": 234234,
+        "id": 1546,
         "title": "Test Product",
         "price": 99.00,
         "description": "lorem ipsum",
@@ -389,11 +403,13 @@ product = {
         "variants": [
             {
                 "id": 54634,
-                "product_id": 2344,
+                "option1":"yellow",
+                "option2":"L",
+                "option3":"95cotton",
                 "sku": "SKWE-234",
                 "stock": 324,
                 "compare_at_price": 88,
-                "price": 99
+                "product_id": 1546,
             }
         ]
         

@@ -57,7 +57,8 @@ SQL_QUERIES = {
     "add_product": "INSERT INTO Product (Id, ProductName, ProductPrice, ProductDescription, StoreId) \
                     VALUES (%s, %s, %s, %s, %s)",
 
-    "add_variant": "",
+    "add_variant": "INSERT INTO ProductVariant (Id, Option1, Option2, Option3, Stock, Sku, CompareAtPrice, ProductId) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
 
     "change_email": "",
 

@@ -2,15 +2,17 @@
 SQL_QUERIES = {
     "create_user_table": "CREATE TABLE IF NOT EXISTS Account(\
             Id SERIAL PRIMARY KEY,\
-            Username VARCHAR(50) NOT NULL UNIQUE,\
-            Email VARCHAR(50) NOT NULL UNIQUE,\
+            Username VARCHAR(32) NOT NULL UNIQUE,\
+            Email VARCHAR(64) NOT NULL UNIQUE,\
             CreatedOn timestamp without time zone DEFAULT now(),\
-            Password VARCHAR(25) NOT NULL );",
+            Password VARCHAR(32) NOT NULL );",
 
     "create_store_table": "CREATE TABLE IF NOT EXISTS Store(\
             Id SERIAL PRIMARY KEY,\
-            StoreName VARCHAR(50) NOT NULL UNIQUE,\
-            Address VARCHAR(100) NOT NULL,\
+            ApiKey VARCHAR(128),\
+            Password VARCHAR(128),\
+            StoreName VARCHAR(64) NOT NULL UNIQUE,\
+            Address VARCHAR(512) NOT NULL,\
             CreatedOn timestamp without time zone DEFAULT now(),\
             UserId INTEGER NOT NULL,\
             IsActivated INTEGER DEFAULT -1,\
@@ -21,7 +23,7 @@ SQL_QUERIES = {
 
     "create_product_table": "CREATE TABLE IF NOT EXISTS Product(\
             Id INTEGER PRIMARY KEY,\
-            ProductName VARCHAR(50) NOT NULL,\
+            ProductName VARCHAR(64) NOT NULL,\
             ProductPrice FLOAT NOT NULL,\
             ProductDescription VARCHAR(1024), \
             CreatedOn timestamp without time zone DEFAULT now(),\
@@ -50,7 +52,7 @@ SQL_QUERIES = {
 
     "check_user":"",
 
-    "new_store": "INSERT INTO Store (StoreName, Address, UserId) VALUES (%s, %s, %s)",
+    "new_store": "INSERT INTO Store (StoreName, Address, UserId, ApiKey, Password) VALUES (%s, %s, %s, %s, %s)",
 
     "add_product": "",
 

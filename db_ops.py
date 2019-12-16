@@ -143,23 +143,26 @@ class database:
         else:
             print("Id does not exist.")
             return False
-    def change_password(self, id, newpassword):
+    def change_password(self, id, oldpassword, newpassword):
         with self.connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT Password FROM Account WHERE Id=%s"
             cursor.execute(sql, (id,))
             result = cursor.fetchone()
-        if result != None:
+        if result != None and result[0] == oldpassword:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "UPDATE Account SET Password=%s WHERE Id=%s"
                 cursor.execute(sql, (newpassword,id))
             self.connection.commit()
             print("Password successfully updated.")
-            return True
+            return {'err': None, 'msg': 'Password successfully updated.'}
+        elif result == None:
+            print("User does not exist.")
+            return {'err': 'User does not exist.'}
         else:
-            print("Email address does not exist.")
-            return False
+            print("Password does not match.")
+            return {'err': 'Password does not match.'}
     def update_store(self, id, name, address):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -356,6 +359,7 @@ db.create_tables()
 db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Store")
+db.change_password(1, "secret2", "changedsecret")
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 #uid = user, sid = store, pid = product, vid = variant

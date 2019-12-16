@@ -163,7 +163,7 @@ class database:
         else:
             print("Password does not match.")
             return {'err': 'Password does not match.'}
-    def update_store(self, id, name, address):
+    def update_store(self, id, name, address, apikey, password):
         with self.connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT Id FROM Store WHERE Id=%s"
@@ -173,16 +173,21 @@ class database:
             cursor.execute(sql, (name,))
             nameexists = cursor.fetchone()
         if result != None:
-            with self.connection.cursor() as cursor:
+            if nameexists == None:
+                with self.connection.cursor() as cursor:
                     # Create a new record
-                    sql = "UPDATE Store SET StoreAddress=%s StoreName=%s WHERE Id=%s"
-                    cursor.execute(sql, (name, address, id))
-            self.connection.commit()
-            print("Store name successfully updated.")
-            return True
+                    sql = "UPDATE Store SET Address=%s, StoreName=%s, ApiKey=%s, Password=%s WHERE Id=%s"
+                    cursor.execute(sql, (address, name, apikey, password, id,))
+                self.connection.commit()
+                print("Store successfully updated.")
+                return {'err': None, 'msg': 'Store successfully updated.'}
+            else:
+                print("Store name already exists")
+                return {'err': 'Store name already exists.'}
+            
         else:
             print("Store does not exist.")
-            return False
+            return {'err': 'Store does not exist.'}
             
     def change_productprice(self, id, newprice):
         with self.connection.cursor() as cursor:
@@ -360,6 +365,7 @@ db.create_user("test4", "test4@test.com", "secret2")
 db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Store")
 db.change_password(1, "secret2", "changedsecret")
+db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 #uid = user, sid = store, pid = product, vid = variant

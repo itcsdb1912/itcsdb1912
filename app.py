@@ -128,7 +128,25 @@ def product(product_id):
     else:
         return redirect(url_for('index'));
 
+@app.route('/change_password', methods=["GET", "POST"])
+def change_password():
+    user = session.get("user")
 
+    if(user):
+        if(request.method == "GET"):
+            return render_template("change_password.html", user=user)
+        else:
+            old_password = request.form.get("old_password")
+            new_password = request.form.get("new_password")
+
+            result = db.change_password(user.id, old_password, new_password)
+
+            if (result.err):
+                return render_template("change_password.html", err=result.err, user=user)
+            else:
+                return redirect(url_for("account"))
+    else:
+        return redirect(url_for("index"))
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

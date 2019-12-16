@@ -45,7 +45,8 @@ ul li {
 }
 
 header {
-    background: #eee;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
 }
 
 header nav ul{
@@ -70,6 +71,10 @@ input[type="submit"] {
     padding: 8px 16px;
     border-radius: 16px;
     margin: 20px 0;
+}
+
+input[type="submit"]:hover {
+    background: #eee;
 }
 
 .content {

@@ -55,7 +55,7 @@ header nav ul{
 }
 
 header nav ul li {
-    padding: 24px 48px;
+    padding: 24px 12px;
 }
 
 input {
@@ -85,6 +85,12 @@ input[type="submit"]:hover {
     align-items: center;
 }
 
+@media (max-width: 479px) {
+    .content {
+        padding: 0 24px;
+    }
+}
+
 #ProductList .product_list {
     display: flex;
     flex-wrap: wrap;
@@ -100,8 +106,19 @@ input[type="submit"]:hover {
     display: flex;
     flex-direction: row;
     align-items: center;
-    flex: 40%;
+    flex: auto;
+    margin: 12px;
     min-width: 300px;
+    max-width: 400px;
+}
+
+#ProductList .product_list .product_item .side_text {
+    width: 100%;
+}
+
+#ProductList .product_list .product_item .side_text .buttons {
+    display: flex;
+    justify-content: space-between;
 }
 
 

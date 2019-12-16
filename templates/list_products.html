@@ -9,10 +9,13 @@
                 {% for p in products %}
                     <div class="product_item card">
                         <img src="{{ p.image.src }}" alt="">
-                        <div>
+                        <div class="side_text">
                             <p>{{p.title}}</p>
                             <p>Stock: {{p.variants[0].inventory_quantity}}</p>
-                            <a href="/product/{{p.id}}">View</a>
+                            <div class="buttons">
+                                <a href="/product/{{p.id}}">View</a>
+                                <a href="/delete_product/{{p.id}}">Delete</a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}

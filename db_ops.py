@@ -64,13 +64,13 @@ class database:
     def new_store(self, userid, name, address):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "SELECT Name FROM Store WHERE Name=%s"
+            sql = "SELECT StoreName FROM Store WHERE StoreName=%s"
             cursor.execute(sql, (name,))
             result = cursor.fetchone()
         if result == None:
             with self.connection.cursor() as cursor:
                 # Create a new record
-                sql = "INSERT INTO Store (Name, Address, Id) \
+                sql = "INSERT INTO Store (StoreName, Address, Id) \
                     VALUES (%s, %s, %s)"
                 cursor.execute(sql, (name, address, userid))
             self.connection.commit()
@@ -171,13 +171,13 @@ class database:
             sql = "SELECT Id FROM Store WHERE Id=%s"
             cursor.execute(sql, (id,))
             result = cursor.fetchone()
-            sql = "SELECT Id FROM Store WHERE Name=%s"
+            sql = "SELECT Id FROM Store WHERE StoreName=%s"
             cursor.execute(sql, (name,))
             nameexists = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                     # Create a new record
-                    sql = "UPDATE Store SET StoreAddress=%s Name=%s WHERE Id=%s"
+                    sql = "UPDATE Store SET StoreAddress=%s StoreName=%s WHERE Id=%s"
                     cursor.execute(sql, (name, address, id))
             self.connection.commit()
             print("Store name successfully updated.")

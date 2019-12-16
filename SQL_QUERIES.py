@@ -9,7 +9,7 @@ SQL_QUERIES = {
 
     "create_store_table": "CREATE TABLE IF NOT EXISTS Store(\
             Id SERIAL PRIMARY KEY,\
-            Name VARCHAR(50) NOT NULL,\
+            StoreName VARCHAR(50) NOT NULL,\
             Address VARCHAR(100) NOT NULL,\
             CreatedOn timestamp without time zone DEFAULT now(),\
             UserId INTEGER NOT NULL,\
@@ -20,7 +20,7 @@ SQL_QUERIES = {
                 ON DELETE CASCADE);",
 
     "create_product_table": "CREATE TABLE IF NOT EXISTS ProductInfo(\
-            Id SERIAL PRIMARY KEY,\
+            Id INTEGER PRIMARY KEY,\
             ProductName VARCHAR(50) NOT NULL,\
             ProductPrice FLOAT NOT NULL,\
             ProductDescription VARCHAR(1024), \

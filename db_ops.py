@@ -1,7 +1,4 @@
 import psycopg2 
-#if db is postgres
-#import pymysql 
-# if db is mysql
 from urllib.parse import urlparse
 from SQL_QUERIES import SQL_QUERIES
 
@@ -9,19 +6,26 @@ class database:
     def __init__(self):
         self.connection = None
         self.url = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
+    #INITIALIZING DB 
     def connect_db(self):
         try:
             self.connection = psycopg2.connect(database = self.url.path[1:],
                                                 user = self.url.username,
                                                 password = self.url.password,
                                                 host = self.url.hostname)
-            #self.connection = pymysql.connect(host='remotemysql.com',user='Y2twfztOBJ',password='sDi9LakvoN',db='Y2twfztOBJ')
             print("Connected!")
             return self.connection
         except:
             print("Connection Failed")
             return False
-
+    def create_tables(self):
+        table_list = ['create_user_table', 'create_store_table', 'create_product_table', 'create_variant_table']
+        for create in table_list:
+            sql = SQL_QUERIES[create]
+            self.connection.cursor().execute(sql,)
+            self.connection.commit()
+        print("Tables ready.")
+        return {"err": None, "msg": "Tables are ready to use."}
 
     def create_user(self, username, email, password):      
         with self.connection.cursor() as cursor:
@@ -41,8 +45,7 @@ class database:
             return {"err": None, "msg": "You have successfully signed up."}
         else:
             print("Username has taken")
-            return {"err": "Username has taken"}
-            
+            return {"err": "Username has taken"}     
     def check_user(self, username, password):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -60,25 +63,19 @@ class database:
             else:
                 print("Wrong password.")
                 return {'err': 'Wrong password.'}
-
     def new_store(self, userid, name, address):
         with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT StoreName FROM Store WHERE StoreName=%s"
-            cursor.execute(sql, (name,))
-            result = cursor.fetchone()
-        if result == None:
-            with self.connection.cursor() as cursor:
+            try:
                 # Create a new record
-                sql = "INSERT INTO Store (StoreName, Address, Id) \
-                    VALUES (%s, %s, %s)"
+                sql = SQL_QUERIES['new_store']
                 cursor.execute(sql, (name, address, userid))
-            self.connection.commit()
-            print("You have successfully opened a store.")
-            return True
-        else:
-            print("This store name exists. Please pick another name.")
-            return False
+                self.connection.commit()
+                print("You have successfully opened a store.")
+                return {'err': None, 'msg': 'Store is opened.'}
+            except:
+                print("This store name exists. Please pick another name.")
+                return {'err': None, 'msg': 'Store name exists.'}
+                
     def add_product(self, storeid, product):
         with self.connection.cursor() as cursor:
 
@@ -307,6 +304,11 @@ class database:
             print("Variant deletion failed.")
             return False
 
+    def drop_tables(self):
+        
+        print("Tables deleted.")
+        return {"err": None, "msg": "Tables are dropped, please create again to continue."} 
+
     def get_data(self):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -315,13 +317,7 @@ class database:
             result = cursor.fetchall()
             print(result)
 
-    # INITIALIZING DB AND SOME UTILITY METHODS
-
-    def create_tables(self):
-        self.create_user_table()
-        self.create_store_table()
-        self.create_product_table()
-        self.create_variant_table()
+    # SOME UTILITY METHODS
 
     def has_user(self):
         sql_query = "SELECT Id FROM Account"

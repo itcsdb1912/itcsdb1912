@@ -3,13 +3,13 @@ SQL_QUERIES = {
     "create_user_table": "CREATE TABLE IF NOT EXISTS Account(\
             Id SERIAL PRIMARY KEY,\
             Username VARCHAR(50) NOT NULL UNIQUE,\
-            Email VARCHAR(50) NOT NULL,\
+            Email VARCHAR(50) NOT NULL UNIQUE,\
             CreatedOn timestamp without time zone DEFAULT now(),\
             Password VARCHAR(25) NOT NULL );",
 
     "create_store_table": "CREATE TABLE IF NOT EXISTS Store(\
             Id SERIAL PRIMARY KEY,\
-            StoreName VARCHAR(50) NOT NULL,\
+            StoreName VARCHAR(50) NOT NULL UNIQUE,\
             Address VARCHAR(100) NOT NULL,\
             CreatedOn timestamp without time zone DEFAULT now(),\
             UserId INTEGER NOT NULL,\
@@ -50,7 +50,7 @@ SQL_QUERIES = {
 
     "check_user":"",
 
-    "new_store": "",
+    "new_store": "INSERT INTO Store (StoreName, Address, UserId) VALUES (%s, %s, %s)",
 
     "add_product": "",
 
@@ -62,4 +62,5 @@ SQL_QUERIES = {
 
     "update_store": "",
 
+    "drop_tables": "",
 }

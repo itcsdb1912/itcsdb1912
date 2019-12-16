@@ -29,7 +29,7 @@ class shopify_controller:
             p = shopify.Product.find(product_id)
             return p
 
-    def update_product(self, product_id):
+    def update_product(self, product_id, product):
         if(shopify == None):
             raise Exception("No shopify instance")
         else:

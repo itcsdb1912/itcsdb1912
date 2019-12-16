@@ -35,6 +35,17 @@ def index():
     else:
         return render_template('create.html')
 
+@app.route('/sync')
+def sync():
+    user = session.get("user")
+    
+    if(user):
+        products = shopifyctrl.get_products()
+        db.sync_products_with(products)
+
+        return redirect(url_for("account"))
+    else:
+        return redirect(url_for("index"))
 @app.route('/drop_tables')
 def drop_tables():
     return render_template("index.html")
@@ -69,6 +80,20 @@ def store():
             return redirect(url_for("account"))
         else:
             return redirect(url_for("index"))
+
+@app.route('/delete_store/<int:store_id>')
+def delete_store(store_id):
+    user = session.get("user")
+
+    if(user):
+        if(store_id):
+            db.delete_store(store_id)
+
+            return redirect(url_for("account"))
+        else:
+            return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
 
 @app.route('/store/<int:store_id>',  methods=["GET", "POST"])
 def store_with_id(store_id):

@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+    <h2>First time coming, set your credentials</h2>
+    <div>
+        <form action="/create" method="POST">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" name="username">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="text" name="email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="text" name="password">
+            </div>
+            <div>
+                <input type="submit" value="CREATE">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

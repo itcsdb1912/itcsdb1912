@@ -62,5 +62,7 @@ SQL_QUERIES = {
 
     "update_store": "",
 
-    "drop_tables": "",
+    "get_tables": "SELECT * FROM INFORMATION_SCHEMA.TABLES",
+
+    "drop_tables": "DROP TABLE Account CASCADE;",
 }

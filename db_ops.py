@@ -23,7 +23,7 @@ class database:
         for create in table_list:
             with self.connection.cursor() as cursor:
                 sql = SQL_QUERIES[create]
-                cursor().execute(sql,)
+                cursor.execute(sql,)
             self.connection.commit()
         print("Tables ready.")
         return {"err": None, "msg": "Tables are ready to use."}
@@ -75,7 +75,7 @@ class database:
                 return {'err': None, 'msg': 'Store is opened.'}
             except:
                 print("This store name exists. Please pick another name.")
-                return {'err': None, 'msg': 'Store name exists.'}
+                return {'err': 'Store name exists.'}
                 
     def add_product(self, storeid, product):
         with self.connection.cursor() as cursor:
@@ -349,10 +349,10 @@ class database:
 
 db = database()
 db.connect_db()
-db.drop_tables()
+#db.drop_tables()
 #db.get_schemas()
 #db.get_tablenames()
-#db.get_data()
+db.create_tables()
 
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table

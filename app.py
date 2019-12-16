@@ -180,15 +180,25 @@ def logout():
         session.clear()
     return redirect(url_for('index'))
 
-@app.route('/account')
+@app.route('/account', methods=["GET", "POST"])
 def account():
     user = session.get('user')
-    if (user):
-        #result = db.get.store()
-        stores = None
-        return render_template('account.html', user=user, stores=stores)
+
+    if(request.method == "GET"):
+        if (user):
+            result = db.get.store()
+            print(result)
+            stores = None
+            return render_template('account.html', user=user, stores=stores)
+        else:
+            return redirect(url_for("index"))
     else:
-        return redirect(url_for("index"))
+        username = request.form.get("username")
+        email = request.form.get("email")
+
+        result = db.update_user(user["id"], username, email)
+
+        return redirect(url_for("account"))
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():

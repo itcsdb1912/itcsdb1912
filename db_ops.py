@@ -6,6 +6,7 @@ class database:
     def __init__(self):
         self.connection = None
         self.url = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
+    #INITIALIZING DB 
     def connect_db(self):
         try:
             self.connection = psycopg2.connect(database = self.url.path[1:],
@@ -17,7 +18,14 @@ class database:
         except:
             print("Connection Failed")
             return False
-
+    def create_tables(self):
+        table_list = ['create_user_table', 'create_store_table', 'create_product_table', 'create_variant_table']
+        for create in table_list:
+            sql = SQL_QUERIES[create]
+            self.connection.cursor().execute(sql,)
+            self.connection.commit()
+        print("Tables ready.")
+        return {"err": None, "msg": "Tables are ready to use."}
 
     def create_user(self, username, email, password):      
         with self.connection.cursor() as cursor:
@@ -37,8 +45,7 @@ class database:
             return {"err": None, "msg": "You have successfully signed up."}
         else:
             print("Username has taken")
-            return {"err": "Username has taken"}
-            
+            return {"err": "Username has taken"}     
     def check_user(self, username, password):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -56,7 +63,6 @@ class database:
             else:
                 print("Wrong password.")
                 return {'err': 'Wrong password.'}
-
     def new_store(self, userid, name, address):
         with self.connection.cursor() as cursor:
             try:
@@ -298,6 +304,11 @@ class database:
             print("Variant deletion failed.")
             return False
 
+    def drop_tables(self):
+        
+        print("Tables deleted.")
+        return {"err": None, "msg": "Tables are dropped, please create again to continue."} 
+
     def get_data(self):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -306,13 +317,7 @@ class database:
             result = cursor.fetchall()
             print(result)
 
-    # INITIALIZING DB AND SOME UTILITY METHODS
-
-    def create_tables(self):
-        self.create_user_table()
-        self.create_store_table()
-        self.create_product_table()
-        self.create_variant_table()
+    # SOME UTILITY METHODS
 
     def has_user(self):
         sql_query = "SELECT Id FROM Account"

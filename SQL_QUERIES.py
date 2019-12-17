@@ -25,7 +25,7 @@ SQL_QUERIES = {
                 ON DELETE CASCADE);",
 
     "create_product_table": "CREATE TABLE IF NOT EXISTS Product(\
-            Id INTEGER PRIMARY KEY,\
+            Id VARCHAR(256) PRIMARY KEY,\
             ProductName VARCHAR(64) NOT NULL,\
             ProductPrice FLOAT NOT NULL,\
             ProductDescription VARCHAR(1024), \
@@ -51,7 +51,7 @@ SQL_QUERIES = {
             Sku VARCHAR(32),\
             CompareAtPrice FLOAT,\
             CreatedOn timestamp without time zone DEFAULT now(),\
-            ProductId INTEGER NOT NULL,\
+            ProductId VARCHAR(256) NOT NULL,\
             CONSTRAINT product_variant\
                 FOREIGN KEY (ProductId)\
                 REFERENCES Product (Id)\

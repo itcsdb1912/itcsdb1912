@@ -33,9 +33,7 @@ class database:
 
         with self.connection.cursor() as cursor:
             cursor.execute(sql_get_store_id, (user_id,))
-            store_id = cursor.fetchone()
-            
-        self.connection.commit()
+            store_id = cursor.fetchone()[0]
 
         for product in products:
             print(product)

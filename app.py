@@ -42,8 +42,9 @@ def sync():
     user = session.get("user")
     
     if(user):
+        user_id = user["id"]
         products = shopifyctrl.get_products()
-        db.sync_products_with(products)
+        db.sync_products(user_id, products)
 
         return redirect(url_for("account"))
     else:
@@ -87,7 +88,7 @@ def store():
         else:
             return redirect(url_for("index"))
 
-@app.route('/delete_store/<int:store_id>')
+@app.route('/store/<int:store_id>/delete')
 def delete_store(store_id):
     user = session.get("user")
 

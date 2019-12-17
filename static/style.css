@@ -110,10 +110,12 @@ header nav ul li {
     margin: 0 auto;
     min-height: 60vh;
     align-items: center;
+    margin-top: 64px;
 }
 
 @media (max-width: 479px) {
     .content {
+        margin-top: 24px;
         padding: 36px 24px;
     }
 }
@@ -170,13 +172,23 @@ header nav ul li {
 }
 
 
+#AccountPage {
+    min-width: 340px;
+}
 
+#AccountPage> div+div {
+    margin-top: 48px;
+}
 
 #AccountPage .store_list {
     display: flex;
     flex-direction: column;
 }
 
-#AccountPage .store_list .store_item{
-    margin-bottom: 12px;
+#AccountPage .store_list .store_item {
+    margin-bottom: 24px;
+}
+
+#AccountPage .store_list .store_item p {
+    margin-bottom: 8px;
 }

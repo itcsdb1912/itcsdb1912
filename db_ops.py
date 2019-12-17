@@ -19,7 +19,7 @@ class database:
             print("Connection Failed")
             return False
     def create_tables(self):
-        table_list = ['create_user_table', 'create_store_table', 'create_product_table', 'create_variant_table']
+        table_list = ['create_user_table', 'create_location_table', 'create_category_table', 'create_store_table', 'create_product_table', 'create_variant_table', ]
         for create in table_list:
             with self.connection.cursor() as cursor:
                 sql = SQL_QUERIES[create]
@@ -385,7 +385,7 @@ class database:
 
     # SOME UTILITY METHODS
     def drop_tables(self):
-        table_list = ['Account', 'Product', 'Store', 'ProductVariant']
+        table_list = ['Account','Location','Category', 'Store','Product', 'ProductVariant' ]
         for table in table_list:
             with self.connection.cursor() as cursor:
                 sql = "DROP TABLE " + table + " CASCADE"
@@ -428,51 +428,32 @@ class database:
             result = cursor.fetchall()
             print(result)
 
-db = database()
-db.connect_db()
-#db.drop_tables()
-#db.get_schemas()
-#db.get_tablenames()
-db.create_tables()
-db.get_data("Store")
-db.create_user("test4", "test4@test.com", "secret2")
+def test():
+    db = database()
+    db.connect_db()
+    #db.drop_tables()
+    #db.get_schemas()
+    db.get_tablenames()
+    #db.get_colnames("Account")
+    db.create_tables()
+    db.get_data("Store")
+    db.create_user("test4", "test4@test.com", "secret2")
 
-db.update_user(1, "test4", "test5@test.com")
+    db.update_user(1, "test4", "test5@test.com")
 
-db.new_store(1, "teststore2", "Istanbul")
-db.get_data("ProductVariant")
-db.change_password(1, "secret2", "changedsecret")
-db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
+    db.new_store(1, "teststore2", "Istanbul")
+    db.get_data("ProductVariant")
+    db.change_password(1, "secret2", "changedsecret")
+    db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 
-product = {
-        "id": 35468,
-        "title": "Test Product",
-        "price": 99.00,
-        "description": "lorem ipsum",
-        "store_id": 1,
-        "variants": [
-            {
-                "id": 54634,
-                "option1":"blue",
-                "option2":"L",
-                "option3":"95cotton",
-                "sku": "SKWE-234",
-                "stock": 324,
-                "compare_at_price": 88,
-                "product_id": 35468,
-            }
-        ]
-        
-    }
-products = [product]
+    #db.update_product(1, product)
+    #db.get_data("ProductVariant")
+    #db.get_colnames("store")
+    #db.new_store(3, "teststore2", "Istanbul")
+    #db.sync_products(1,products)
+    db.connection.close()
 
-#db.update_product(1, product)
-#db.get_data("ProductVariant")
-#db.get_colnames("store")
-#db.new_store(3, "teststore2", "Istanbul")
-#db.sync_products(1,products)
-#db.connection.close()
-
+test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

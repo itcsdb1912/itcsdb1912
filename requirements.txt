@@ -24,6 +24,7 @@ pyactiveresource==2.1.2
 pyrsistent==0.15.6
 pytz==2019.3
 PyYAML==5.2
+redis==3.3.11
 schwifty==2018.9.1
 ShopifyAPI==5.1.2
 six==1.13.0

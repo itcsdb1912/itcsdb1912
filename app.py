@@ -48,6 +48,7 @@ def sync():
         return redirect(url_for("account"))
     else:
         return redirect(url_for("index"))
+        
 @app.route('/drop_tables')
 def drop_tables():
     return render_template("index.html")

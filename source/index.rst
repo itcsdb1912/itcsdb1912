@@ -1,20 +1,14 @@
-Welcome to ShopifyProductManagement's documentation!
-====================================================
+Welcome to itucsdb1912's documentation!
+=======================================
 
-.. automodule:: app.app
-    :members:
+:Team: ShopifyProductManagement
+
+:Members:
+
+   * Serhat
+   * Oytun
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-   test
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   developer/index

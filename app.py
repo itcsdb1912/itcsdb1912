@@ -1,4 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template, session
+from validator_collection import validators, checkers, errors
+
 import secrets
 
 from shopifycontroller import shopify_controller
@@ -71,10 +73,13 @@ def store():
     else:
         if(user):
             user_id = user["id"]    
-            store_name = request.form.get("store_name")
-            store_address = request.form.get("store_address")
-            store_api_key = request.form.get("store_api_key")
-            store_password = request.form.get("store_password")
+            try:
+                store_name = validators.string(request.form.get("store_name"))
+                store_address = validators.string(request.form.get("store_address"))
+                store_api_key = validators.numeric(request.form.get("store_api_key"))
+                store_password = validators.numeric(request.form.get("store_password"))
+            except:
+                return redirect(url_for("account"), err="Datas not valid")
 
             db.new_store(user_id, store_name, store_address, store_api_key, store_password)
             return redirect(url_for("account"))
@@ -109,13 +114,16 @@ def store_with_id(store_id):
             return redirect(url_for("index"))
     else:
         if(user):
-            user_id = user["id"]    
-            name = request.form.get("store_name")
-            address = request.form.get("store_address")
-            api_key = request.form.get("store_api_key")
-            password = request.form.get("store_password")
+            user_id = user["id"]
+            try:
+                store_name = validators.string(request.form.get("store_name"))
+                store_address = validators.string(request.form.get("store_address"))
+                store_api_key = validators.numeric(request.form.get("store_api_key"))
+                store_password = validators.numeric(request.form.get("store_password"))
+            except:
+                return redirect(url_for("account"), err="Datas not valid")
 
-            db.update_store(store_id, user_id, name, address, api_key, password)
+            db.update_store(user_id, store_name, store_address, store_api_key, store_password)
             return redirect(url_for("account"))
         else:
             return redirect(url_for("index"))
@@ -133,11 +141,16 @@ def product(product_id):
             return redirect(url_for('index'))
     else:
         if(user):
-            name = request.form.get("title")
-            price = request.form.get("price")
-            stock = request.form.get("stock")
+            try:
+                name = validators.string(request.form.get("title"))
+                price = validators.float(request.form.get("price"))
+                stock = validators.integer(request.form.get("stock"))
+            except:
+                return redirect(url_for("index", err="datas not valid"))
 
             result = db.update_product(product_id)
+
+            return redirect(url_for("product/"+product_id))
         else:
             return redirect(url_for('index'))
 

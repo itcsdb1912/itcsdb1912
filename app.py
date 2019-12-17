@@ -1,4 +1,5 @@
 from flask import Flask, request, redirect, url_for, render_template, session
+from flask_session import Session
 from validator_collection import validators, checkers, errors
 import os
 import redis
@@ -9,15 +10,17 @@ from shopifycontroller import shopify_controller
 from db_ops import database
 
 
-redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
-redis = redis.from_url(redis_url)
+redis_url = os.environ.get('REDISTOGO_URL', "redis://redistogo:63fe48bb2ffdf60819e7231401fe283c@porgy.redistogo.com:11781/")
+
+redis_db = redis.from_url(redis_url)
 
 app = Flask(__name__)
+
 
 # session related
 app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
 app.config["SESSION_TYPE"] = "redis"
-
+app.config["SESSION_REDIS"] = redis_db
 
 
 shopifyconfig = {

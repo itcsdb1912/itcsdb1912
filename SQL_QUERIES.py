@@ -42,7 +42,7 @@ SQL_QUERIES = {
             Sku VARCHAR(32),\
             CompareAtPrice FLOAT,\
             CreatedOn timestamp without time zone DEFAULT now(),\
-            ProductId INTEGER NOT NULL UNIQUE,\
+            ProductId INTEGER NOT NULL,\
             CONSTRAINT product_variant\
                 FOREIGN KEY (ProductId)\
                 REFERENCES Product (Id)\
@@ -60,7 +60,7 @@ SQL_QUERIES = {
     "add_variant": "INSERT INTO ProductVariant (Id, Option1, Option2, Option3, Stock, Sku, CompareAtPrice, ProductId) \
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
 
-    "change_email": "",
+    "update_user": "UPDATE Account SET Username =%s, Email=%s WHERE Id=%s",
 
     "change_password": "",
 

@@ -178,7 +178,24 @@ class database:
         else:
             print("Store does not exist.")
             return {'err': 'Store does not exist.'}
-            
+    def update_product(self, product):
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "UPDATE Product \
+                    SET ProductName=%s, ProductPrice=%s,ProductDescription=%s,StoreId=%s,WHERE Id=%s"
+                cursor.execute(sql, (product['title'], 
+                                    product['price'], 
+                                    product['description'], 
+                                    product['store_id'], 
+                                    product['id']))
+                self.connection.commit()
+                print("Product attributes changed.")
+                return {'err': None, 'msg': 'Product attributes changed.'}
+        except:
+            self.connection.rollback()
+            print("Username already exists.")
+            return {'err': 'Username already exists.'}
+
     def change_productprice(self, id, newprice):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -426,16 +443,16 @@ class database:
 
 db = database()
 db.connect_db()
-#db.drop_tables()
+db.drop_tables()
 #db.get_schemas()
 #db.get_tablenames()
 db.create_tables()
 db.get_data("Account")
-#db.create_user("test4", "test4@test.com", "secret2")
+db.create_user("test4", "test4@test.com", "secret2")
 
 db.update_user(1, "test4", "test5@test.com")
 
-#db.new_store(1, "teststore2", "Istanbul")
+db.new_store(1, "teststore2", "Istanbul")
 db.get_data("Account")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")

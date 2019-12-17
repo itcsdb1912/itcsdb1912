@@ -27,6 +27,11 @@ class database:
             self.connection.commit()
         print("Tables ready.")
         return {"err": None, "msg": "Tables are ready to use."}
+    def sync_products(self, storeid, products):
+        print(products)
+        for product in products:
+            print(product)
+            self.add_product(storeid, product, update_iferror=True)
 
     def create_user(self, username, email, password):  
         try:    
@@ -73,7 +78,7 @@ class database:
                 self.connection.rollback()
                 print("This store name exists. Please pick another name.")
                 return {'err': 'Store name exists.'}            
-    def add_product(self, storeid, product):
+    def add_product(self, storeid, product, update_iferror=False):
         # insert to variants with saved product_id
         try:
             with self.connection.cursor() as cursor:
@@ -92,24 +97,32 @@ class database:
             return {'err':None,'msg':'You have successfully created a product.'}
         except:
             self.connection.rollback()
+            message = {'err':'This product exists.'}
+            if update_iferror==True:
+                self.update_product(product)
+                print("Product updated instead of being added.")
+                message['msg'] = 'Product updated instead of being added.'
             print("This product exists.")
-            return {'err':'This product exists.'}
+            return message
     def add_variant(self, variant):
-        with self.connection.cursor() as cursor:
-            # Create a new record
-            sql = SQL_QUERIES['add_variant']
-            cursor.execute(sql, (variant['id'], 
-                                variant['option1'], 
-                                variant['option2'], 
-                                variant['option3'], 
-                                variant['stock'],
-                                variant['sku'],
-                                variant['compare_at_price'],
-                                variant['product_id'],))
-        self.connection.commit()
-        print("You have successfully added a variant.")
-        return {'err':None,'msg':'You have successfully added a variant.'}
-
+        try:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = SQL_QUERIES['add_variant']
+                cursor.execute(sql, (variant['id'], 
+                                    variant['option1'], 
+                                    variant['option2'], 
+                                    variant['option3'], 
+                                    variant['stock'],
+                                    variant['sku'],
+                                    variant['compare_at_price'],
+                                    variant['product_id'],))
+            self.connection.commit()
+            print("You have successfully added a variant.")
+            return {'err':None,'msg':'You have successfully added a variant.'}
+        except:
+            print("Variant id exists.")
+            return {'err':'Variant id exists.'}
     def update_user(self, id, username, email):
         try:
             with self.connection.cursor() as cursor:
@@ -437,12 +450,13 @@ product = {
         ]
         
     }
+products = [product]
 
 db.update_product(product)
 db.get_data("ProductVariant")
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
-
+db.sync_products(1,products)
 db.connection.close()
 
 #uid = user, sid = store, pid = product, vid = variant

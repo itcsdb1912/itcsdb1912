@@ -39,6 +39,14 @@ class database:
             print(product)
             self.add_product(store_id, product, update_iferror=True)
 
+    def create_location(self, country, city, county='Center', neighbor='default', address='default'):
+        with self.connection.cursor() as cursor:
+            # Create a new record
+            sql = SQL_QUERIES['new_location']
+            cursor.execute(sql, (country, city, county, neighbor, address))
+            self.connection.commit()
+            print("New location is created.")
+            return {'err': None, 'msg': 'New location is created.'}
     def create_user(self, username, email, password):  
         try:    
             with self.connection.cursor() as cursor:
@@ -71,12 +79,12 @@ class database:
             else:
                 print("Wrong password.")
                 return {'err': 'Wrong password.'}
-    def new_store(self, userid, name, address, apikey='default', password='default'):
+    def new_store(self, userid, name, locationid, apikey='default', password='default'):
         with self.connection.cursor() as cursor:
             try:
                 # Create a new record
                 sql = SQL_QUERIES['new_store']
-                cursor.execute(sql, (name, address, userid, apikey, password))
+                cursor.execute(sql, (name, locationid, userid, apikey, password))
                 self.connection.commit()
                 print("You have successfully opened a store.")
                 return {'err': None, 'msg': 'Store is opened.'}
@@ -132,29 +140,41 @@ class database:
         except:
             print("Variant id exists.")
             return {'err':'Variant id exists.'}
+    
     def update_user(self, id, username, email):
         try:
             with self.connection.cursor() as cursor:
                 sql = "UPDATE Account SET Username =%s WHERE Id=%s"
                 cursor.execute(sql, (username, id,))
                 self.connection.commit()
+                try:
+                    with self.connection.cursor() as cursor:
+                        sql = "UPDATE Account SET Email =%s WHERE Id=%s"
+                        cursor.execute(sql, (email, id,))
+                        self.connection.commit()
+                        print("Email changed.")
+                        return {'err': None, 'msg': 'Email changed.'}
+                except:
+                    self.connection.rollback()
+                    print("Email already exists.")
+                    return {'err': 'Email already exists.'}
                 print("Username changed.")
                 return {'err': None, 'msg': 'Username changed.'}
         except:
             self.connection.rollback()
+            try:
+                with self.connection.cursor() as cursor:
+                    sql = "UPDATE Account SET Email =%s WHERE Id=%s"
+                    cursor.execute(sql, (email, id,))
+                    self.connection.commit()
+                    print("Email changed.")
+                    return {'err': None, 'msg': 'Email changed.'}
+            except:
+                self.connection.rollback()
+                print("Email already exists.")
+                return {'err': 'Email already exists.'}
             print("Username already exists.")
-            return {'err': 'Username already exists.'}
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "UPDATE Account SET Email =%s WHERE Id=%s"
-                cursor.execute(sql, (email, id,))
-                self.connection.commit()
-                print("Email changed.")
-                return {'err': None, 'msg': 'Email changed.'}
-        except:
-            self.connection.rollback()
-            print("Email already exists.")
-            return {'err': 'Email already exists.'}
+            return {'err': 'Username already exists.'}        
     def change_password(self, id, oldpassword, newpassword):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -175,7 +195,7 @@ class database:
         else:
             print("Password does not match.")
             return {'err': 'Password does not match.'}
-    def update_store(self, id, name, address, apikey, password):
+    def update_store(self, id, name, locationid, apikey, password):
         with self.connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT Id FROM Store WHERE Id=%s"
@@ -188,8 +208,8 @@ class database:
             if nameexists == None:
                 with self.connection.cursor() as cursor:
                     # Create a new record
-                    sql = "UPDATE Store SET Address=%s, StoreName=%s, ApiKey=%s, Password=%s WHERE Id=%s"
-                    cursor.execute(sql, (address, name, apikey, password, id,))
+                    sql = "UPDATE Store SET LocationId=%s, StoreName=%s, ApiKey=%s, Password=%s WHERE Id=%s"
+                    cursor.execute(sql, (locationid, name, apikey, password, id,))
                 self.connection.commit()
                 print("Store successfully updated.")
                 return {'err': None, 'msg': 'Store successfully updated.'}
@@ -214,7 +234,6 @@ class database:
                 self.update_variant(product.id, variant)
             print("Product attributes changed.")
             return {'err': None, 'msg': 'Product attributes changed.'}
-
     def update_variant(self, product_id, variant):
         with self.connection.cursor() as cursor:
             sql = "UPDATE ProductVariant \
@@ -382,7 +401,23 @@ class database:
         else:
             print("Variant deletion failed.")
             return False
-
+    def delete_location(self,locationid):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT Id FROM Location WHERE Id=%s"
+            cursor.execute(sql, (locationid,))
+            result = cursor.fetchone()
+        if result != None:
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql = "DELETE FROM Location WHERE Id=%s"
+                cursor.execute(sql, (locationid,))
+            self.connection.commit()
+            print("Variant successfully deleted.")
+            return True
+        else:
+            print("Variant deletion failed.")
+            return False
     # SOME UTILITY METHODS
     def drop_tables(self):
         table_list = ['Account','Location','Category', 'Store','Product', 'ProductVariant' ]
@@ -431,25 +466,31 @@ class database:
 def test():
     db = database()
     db.connect_db()
+    #db.create_location("TR", "IST")
     #db.drop_tables()
     #db.get_schemas()
-    db.get_tablenames()
+    #db.get_tablenames()
     #db.get_colnames("Account")
     db.create_tables()
+    db.get_data("Account")
     db.get_data("Store")
+    db.get_data("Product")
+    db.get_data("Location")
+    #db.get_data("ProductVariant")
+
     db.create_user("test4", "test4@test.com", "secret2")
 
-    db.update_user(1, "test4", "test5@test.com")
-
-    db.new_store(1, "teststore2", "Istanbul")
-    db.get_data("ProductVariant")
-    db.change_password(1, "secret2", "changedsecret")
-    db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
+    #db.update_user(1, "test4", "test4@test.com")
+    
+    #db.new_store(1, "teststore2", 2)
+    
+    #db.change_password(1, "secret2", "changedsecret")
+    #db.update_store(5, "teststorechanged", 3, "agad98765", "684sag1sd32fa65")
 
     #db.update_product(1, product)
     #db.get_data("ProductVariant")
     #db.get_colnames("store")
-    #db.new_store(3, "teststore2", "Istanbul")
+    #db.new_store(1, "teststore3", 1)
     #db.sync_products(1,products)
     db.connection.close()
 

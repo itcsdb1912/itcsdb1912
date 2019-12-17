@@ -3,7 +3,7 @@ from flask_session import Session
 from validator_collection import validators, checkers, errors
 import os
 import redis
-
+import shopify
 import secrets
 
 from shopifycontroller import shopify_controller
@@ -155,13 +155,17 @@ def product(product_id):
     else:
         if(user):
             try:
-                name = validators.string(request.form.get("title"))
+                title = validators.string(request.form.get("title"))
                 price = validators.float(request.form.get("price"))
                 stock = validators.integer(request.form.get("stock"))
             except:
                 return redirect(url_for("index", err="datas not valid"))
-
-            result = db.update_product(product_id)
+            product = shopifyctrl.get_product(int(product_id))
+            product.title = title
+            product.price = price
+            product.variants[0].inventory_quantity = stock
+            product.save()
+            result = db.update_product(product_id, product)
 
             return redirect(url_for("product/"+product_id))
         else:

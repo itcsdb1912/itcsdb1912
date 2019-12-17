@@ -1,7 +1,16 @@
+install:
+    - pip install travis-sphinx
+    - pip install sphinx_rtd_theme
+language: python
+python:
+    - 3.6
+script:
+    - travis-sphinx --outdir='docs/_build' build --source=docs/source --nowarn
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: 4703ba87cf2c72613cebc32318d3b9c0857f354b  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
-  on:
-    branch: master
+    - provider: pages
+      skip_cleanup: true
+      github_token: 4703ba87cf2c72613cebc32318d3b9c0857f354b
+      local_dir: docs/_build
+      on:
+        branch: master
+        python: 3.6

@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 # session related
 app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
-app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REDIS"] = redis_db
 
 

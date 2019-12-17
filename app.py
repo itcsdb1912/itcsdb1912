@@ -92,7 +92,7 @@ def store():
                 store_api_key = validators.numeric(request.form.get("store_api_key"))
                 store_password = validators.numeric(request.form.get("store_password"))
             except:
-                return redirect(url_for("account"), err="Datas not valid")
+                return redirect(url_for("account", err="Datas not valid"))
 
             db.new_store(user_id, store_name, store_address, store_api_key, store_password)
             return redirect(url_for("account"))

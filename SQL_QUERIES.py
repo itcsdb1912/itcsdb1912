@@ -5,6 +5,7 @@ SQL_QUERIES = {
             Username VARCHAR(32) NOT NULL UNIQUE,\
             Email VARCHAR(64) NOT NULL UNIQUE,\
             CreatedOn timestamp without time zone DEFAULT now(),\
+            IsStoreOwner INTEGER DEFAULT 1,\
             Password VARCHAR(32) NOT NULL );",
 
     "create_store_table": "CREATE TABLE IF NOT EXISTS Store(\
@@ -12,13 +13,15 @@ SQL_QUERIES = {
             ApiKey VARCHAR(128),\
             Password VARCHAR(128),\
             StoreName VARCHAR(64) NOT NULL UNIQUE,\
-            Address VARCHAR(512) NOT NULL,\
-            CreatedOn timestamp without time zone DEFAULT now(),\
-            UserId INTEGER NOT NULL,\
             IsActivated INTEGER DEFAULT -1,\
+            CreatedOn timestamp without time zone DEFAULT now(),\
+            LocationId INTEGER ,\
+            UserId INTEGER NOT NULL,\
             CONSTRAINT user_store\
-                FOREIGN KEY (UserId)\
-                REFERENCES Account (Id)\
+                FOREIGN KEY (UserId) REFERENCES Account (Id)\
+                ON DELETE CASCADE,\
+            CONSTRAINT loc_store\
+                FOREIGN KEY (LocationId) REFERENCES Location (Id)\
                 ON DELETE CASCADE);",
 
     "create_product_table": "CREATE TABLE IF NOT EXISTS Product(\
@@ -27,7 +30,13 @@ SQL_QUERIES = {
             ProductPrice FLOAT NOT NULL,\
             ProductDescription VARCHAR(1024), \
             CreatedOn timestamp without time zone DEFAULT now(),\
+            ImgSource VARCHAR(512),\
+            CategoryId INTEGER,\
             StoreId INTEGER NOT NULL,\
+            CONSTRAINT cat_product\
+                FOREIGN KEY (CategoryId)\
+                REFERENCES Category (Id)\
+                ON DELETE CASCADE,\
             CONSTRAINT store_product\
                 FOREIGN KEY (StoreId)\
                 REFERENCES Store (Id)\
@@ -48,6 +57,21 @@ SQL_QUERIES = {
                 REFERENCES Product (Id)\
                 ON DELETE CASCADE);",
 
+    "create_location_table":"CREATE TABLE IF NOT EXISTS Location(\
+            Id SERIAL PRIMARY KEY,\
+            Country VARCHAR(64),\
+            City VARCHAR(64),\
+            County VARCHAR(64),\
+            Neighborhood VARCHAR(64),\
+            Address VARCHAR(64));",
+    
+    "create_category_table":"CREATE TABLE IF NOT EXISTS Category(\
+            Id SERIAL PRIMARY KEY,\
+            CategoryName VARCHAR(64),\
+            IsDefault INTEGER,\
+            BrandName VARCHAR(64),\
+            Sector VARCHAR(64));",
+#anothercolumn VARCHAR(64),
     "create_user": "INSERT INTO Account (Username, Email, Password) VALUES (%s, %s, %s) RETURNING Id, Username",
 
     "check_user":"",

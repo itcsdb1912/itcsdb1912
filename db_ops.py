@@ -111,31 +111,28 @@ class database:
         return {'err':None,'msg':'You have successfully added a variant.'}
 
     def update_user(self, id, username, email):
-        return id
-    def change_email(self, id, newemail):
-        with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM Account WHERE Id=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-            sql = "SELECT Id FROM Account WHERE Email=%s"
-            cursor.execute(sql, (newemail,))
-            emailexists = cursor.fetchone()
-        if result != None:
-            if emailexists == None:
-                with self.connection.cursor() as cursor:
-                    # Create a new record
-                    sql = "UPDATE Account SET Email=%s WHERE Id=%s"
-                    cursor.execute(sql, (newemail,id))
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "UPDATE Account SET Username =%s WHERE Id=%s"
+                cursor.execute(sql, (username, id,))
                 self.connection.commit()
-                print("Email address successfully updated.")
-                return True
-            else:
-                print("Email address already exists")
-                return False
-        else:
-            print("Id does not exist.")
-            return False
+                print("Username changed.")
+                return {'err': None, 'msg': 'Username changed.'}
+        except:
+            self.connection.rollback()
+            print("Username already exists.")
+            return {'err': 'Username already exists.'}
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "UPDATE Account SET Email =%s WHERE Id=%s"
+                cursor.execute(sql, (email, id,))
+                self.connection.commit()
+                print("Email changed.")
+                return {'err': None, 'msg': 'Email changed.'}
+        except:
+            self.connection.rollback()
+            print("Email already exists.")
+            return {'err': 'Email already exists.'}
     def change_password(self, id, oldpassword, newpassword):
         with self.connection.cursor() as cursor:
             # Read a single record
@@ -234,6 +231,36 @@ class database:
             print("Entered variant cannot be found.")
             return False
 
+    def get_product(self, id=None):
+        if id != None:
+            sql = "SELECT * FROM Product WHERE Id=%s"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,(id,))
+                result = cursor.fetchone()
+            if result != None:
+                return {'err':None, 'msg': 'One Product data collected.', 'data':{'id':result[0], 
+                                                                        'title':result[1], 
+                                                                        'price':result[2],
+                                                                        'description':result[3],
+                                                                        'timestamp':result[4],
+                                                                        'storeid':result[5]}}
+            else:
+                return {'err':'Id cannot be found.'}
+                
+        else:
+            sql = "SELECT * FROM Product"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,())
+                result = cursor.fetchall()
+            message = {'err':None, 'msg': 'All Product data collected.', 'data': []}
+            for product in result:
+                message['data'].append({'id':product[0], 
+                                        'title':product[1], 
+                                        'price':product[2],
+                                        'description':product[3],
+                                        'timestamp':product[4],
+                                        'storeid':product[5]})
+            return message
     def get_store(self, id=None):
         if id != None:
             sql = "SELECT * FROM Store WHERE Id=%s"
@@ -282,7 +309,6 @@ class database:
                                                                         'password':result[4]}}
             else:
                 return {'err':'Id cannot be found.'}
-
 
     def delete_account(self, userid):
         with self.connection.cursor() as cursor:
@@ -404,12 +430,16 @@ db.connect_db()
 #db.get_schemas()
 #db.get_tablenames()
 db.create_tables()
-db.create_user("test4", "test4@test.com", "secret2")
-db.new_store(1, "teststore2", "Istanbul")
-db.get_data("Store")
+db.get_data("Account")
+#db.create_user("test4", "test4@test.com", "secret2")
+
+db.update_user(1, "test4", "test5@test.com")
+
+#db.new_store(1, "teststore2", "Istanbul")
+db.get_data("Account")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
-print(db.get_store())
+
 product = {
         "id": 35468,
         "title": "Test Product",

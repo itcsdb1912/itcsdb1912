@@ -5,12 +5,12 @@ language: python
 python:
     - 3.6
 script:
-    - travis-sphinx --outdir='_build' build --source=source --nowarn
+    - travis-sphinx --outdir='build' build --source=source --nowarn
 deploy:
     - provider: pages
       skip_cleanup: true
       github_token: 4703ba87cf2c72613cebc32318d3b9c0857f354b
-      local_dir: _build
+      local_dir: build
       on:
         branch: master
         python: 3.6

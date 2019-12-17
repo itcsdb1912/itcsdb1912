@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div>
+<div id="AccountPage">
     <div>
         <div class="header_line">
             <h2>Account Details</h2>
@@ -9,15 +9,15 @@
         </div>
         <div class="card">
             <form action="/account" method="POST">
-                <div>
+                <div class="form_input">
                     <label for="username">Username</label>
                     <input type="text" name="username" value="{{user.username}}">
                 </div>
-                <div>
+                <div class="form_input">
                     <label for="email">Email</label>
                     <input type="text" name="email" value="{{user.email}}">
                 </div>
-                <div>
+                <div class="form_input">
                     <input type="submit" value="UPDATE">
                 </div>
             </form>
@@ -30,11 +30,11 @@
             <h2>Stores</h2>
             <a href="/store">+Add Store</a>
         </div>
-        <div>
+        <div class="store_list">
             {% if stores %}
                 {% for s in stores %}
-                    <div class="card">
-                        <div class="store_item ">
+                    <div class="store_item">
+                        <div class="card">
                             <p>{{s.storename}}</p>
                             <p>Address: {{s.address}}</p>
                             <div class="buttons_line">

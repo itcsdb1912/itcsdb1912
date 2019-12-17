@@ -38,6 +38,10 @@ ul li {
     border: 1px solid #ccc;
 }
 
+.card:hover {
+    box-shadow: 0 0 16px 0 rgba(0,0,0,0.1);
+}
+
 .header_line {
     display: flex;
     align-items: center;
@@ -49,24 +53,7 @@ ul li {
     justify-content: space-between;
 }
 
-header {
-    background: #fff;
-    border-bottom: 1px solid #ccc;
-}
 
-header nav {
-    max-width: 1200px;
-    margin: auto;
-}
-
-header nav ul{
-    display: flex;
-    flex-direction: row;
-}
-
-header nav ul li {
-    padding: 24px 12px;
-}
 
 input {
     border: none;
@@ -93,7 +80,28 @@ input[type="submit"]:hover {
 }
 
 .form_input input {
-    flex: 100%;
+    flex: 50%;
+}
+
+
+
+header {
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+}
+
+header nav {
+    max-width: 1200px;
+    margin: auto;
+}
+
+header nav ul{
+    display: flex;
+    flex-direction: row;
+}
+
+header nav ul li {
+    padding: 24px 12px;
 }
 
 .content {
@@ -159,4 +167,16 @@ input[type="submit"]:hover {
 #ProductDetail .product_detail__wrapper .side_image,
 #ProductDetail .product_detail__wrapper .side_detail { 
     min-width: 300px;
+}
+
+
+
+
+#AccountPage .store_list {
+    display: flex;
+    flex-direction: column;
+}
+
+#AccountPage .store_list .store_item{
+    margin-bottom: 12px;
 }

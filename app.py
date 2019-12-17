@@ -101,8 +101,10 @@ def store_with_id(store_id):
 
     if (request.method == "GET"):
         if(user):
-            store = db.get_store(store_id)
-            return render_template('store', user=user, store=store)
+            result = db.get_store(store_id)
+            store = result["data"]
+            print(store)
+            return render_template('store.html', user=user, store=store)
         else:
             return redirect(url_for("index"))
     else:

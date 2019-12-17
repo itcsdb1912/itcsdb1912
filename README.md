@@ -4,7 +4,7 @@
 
 ## To Begin
 
-- it works on [here](https://shopifyproductmanagement.herokuapp.com/) 
+- it works on [shopifyproductmanagement.herokuapp.com](https://shopifyproductmanagement.herokuapp.com/) 
 
 - to run locally, ``` ./init.sh ``` after installing ```pip install -r requirements.txt```
 

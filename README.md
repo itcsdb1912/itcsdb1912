@@ -4,17 +4,14 @@
 
 ## To Begin
 
-- Follow [this](https://flask.palletsprojects.com/en/1.1.x/installation/) to install Flask
-- Run project with  ```./init.sh``` 
-- and set edit parameters in  ```init.sh``` file
+- it works on [here](https://shopifyproductmanagement.herokuapp.com/) 
 
+- to run locally, ``` ./init.sh ``` after installing ```pip install -r requirements.txt```
+
+- then browse ```localhost:3000```
 
 ## TODO (will be updated)
-- Server Design (API etc.)
-- ```DB``` Design
-+ ```DB``` Connection
-- Create the ```ShopifyController```
-- Sync ```DB``` with ```ShopifyStore```
-- Add ```Auth``` and ```Session``` things to server
-- UI design and rendering ```(HTML)```
-- Test etc.
+- validators must be fulfilled
+- documentation is not finished yet
+- error and success messages not prompting yet
+

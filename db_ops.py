@@ -179,75 +179,35 @@ class database:
             print("Store does not exist.")
             return {'err': 'Store does not exist.'}
     def update_product(self, product):
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "UPDATE Product \
-                    SET ProductName=%s, ProductPrice=%s,ProductDescription=%s,StoreId=%s,WHERE Id=%s"
-                cursor.execute(sql, (product['title'], 
-                                    product['price'], 
-                                    product['description'], 
-                                    product['store_id'], 
-                                    product['id']))
-                self.connection.commit()
-                print("Product attributes changed.")
-                return {'err': None, 'msg': 'Product attributes changed.'}
-        except:
-            self.connection.rollback()
-            print("Username already exists.")
-            return {'err': 'Username already exists.'}
-
-    def change_productprice(self, id, newprice):
         with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM ProductInfo WHERE Id=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-        if result != None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "UPDATE ProductInfo SET ProductPrice=%s WHERE Id=%s"
-                cursor.execute(sql, (newprice,id))
+            sql = "UPDATE Product \
+                SET ProductName=%s, ProductPrice=%s,ProductDescription=%s,StoreId=%s WHERE Id=%s"
+            cursor.execute(sql, (product['title'], 
+                                product['price'], 
+                                product['description'], 
+                                product['store_id'], 
+                                product['id']))
             self.connection.commit()
-            print("Product price successfully updated.")
-            return True
-        else:
-            print("Entered product cannot be found.")
-            return False
-    def change_productdiscount(self, id, newdiscount):
+            for variant in product['variants']:
+                self.update_variant(variant)
+            print("Product attributes changed.")
+            return {'err': None, 'msg': 'Product attributes changed.'}
+    def update_variant(self, variant):
         with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM ProductInfo WHERE Id=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-        if result != None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "UPDATE ProductInfo SET ProductDiscount=%s WHERE Id=%s"
-                cursor.execute(sql, (newdiscount,id))
+            sql = "UPDATE ProductVariant \
+                SET Option1=%s, Option2=%s,Option3=%s,Stock=%s,Sku=%s, CompareAtPrice=%s, ProductId=%s WHERE Id=%s"
+            cursor.execute(sql, (variant['option1'], 
+                                variant['option2'], 
+                                variant['option3'],
+                                variant['stock'], 
+                                variant['sku'],
+                                variant['compare_at_price'],
+                                variant['product_id'], 
+                                variant['id']))
             self.connection.commit()
-            print("Product discount successfully updated.")
-            return True
-        else:
-            print("Entered product cannot be found.")
-            return False
-    def update_variantstock(self, id, newstock):
-        with self.connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT Id FROM ProductVariantInfo WHERE Id=%s"
-            cursor.execute(sql, (id,))
-            result = cursor.fetchone()
-        if result != None:
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql = "UPDATE ProductVariantInfo SET Stock=%s WHERE Id=%s"
-                cursor.execute(sql, (newstock, id))
-            self.connection.commit()
-            print("Variant stock successfully updated.")
-            return True
-        else:
-            print("Entered variant cannot be found.")
-            return False
-
+            print("Product Variant attributes changed.")
+            return {'err': None, 'msg': 'Product Variant attributes changed.'}
+    
     def get_product(self, id=None):
         if id != None:
             sql = "SELECT * FROM Product WHERE Id=%s"
@@ -398,7 +358,7 @@ class database:
 
     # SOME UTILITY METHODS
     def drop_tables(self):
-        table_list = ['Account', 'Store', 'Product', 'ProductVariant']
+        table_list = ['Account', 'Product', 'Store', 'ProductVariant']
         for table in table_list:
             with self.connection.cursor() as cursor:
                 sql = "DROP TABLE " + table + " CASCADE"
@@ -443,17 +403,17 @@ class database:
 
 db = database()
 db.connect_db()
-db.drop_tables()
+#db.drop_tables()
 #db.get_schemas()
 #db.get_tablenames()
 db.create_tables()
-db.get_data("Account")
+db.get_data("Store")
 db.create_user("test4", "test4@test.com", "secret2")
 
 db.update_user(1, "test4", "test5@test.com")
 
 db.new_store(1, "teststore2", "Istanbul")
-db.get_data("Account")
+db.get_data("ProductVariant")
 db.change_password(1, "secret2", "changedsecret")
 db.update_store(1, "teststorechanged", "Istanbul", "agad98765", "684sag1sd32fa65")
 
@@ -466,7 +426,7 @@ product = {
         "variants": [
             {
                 "id": 54634,
-                "option1":"yellow",
+                "option1":"blue",
                 "option2":"L",
                 "option3":"95cotton",
                 "sku": "SKWE-234",
@@ -478,11 +438,12 @@ product = {
         
     }
 
-#db.add_product(1,product)
+db.update_product(product)
+db.get_data("ProductVariant")
 #db.get_colnames("store")
 #db.new_store(3, "teststore2", "Istanbul")
 
-
+db.connection.close()
 
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table

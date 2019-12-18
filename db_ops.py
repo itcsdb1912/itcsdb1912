@@ -258,11 +258,15 @@ class database:
             print("Product Variant attributes changed.")
             return {'err': None, 'msg': 'Product Variant attributes changed.'}
     
-    def get_product(self, id=None):
+    def get_product(self,userid, id=None ):
+        sql = "SELECT Id FROM Store WHERE UserId=%s AND IsActivated=1"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql,(userid,))
+            storeid = cursor.fetchone()[0]
         if id != None:
-            sql = "SELECT * FROM Product WHERE Id=%s"
+            sql = "SELECT * FROM Product WHERE StoreId=%s AND Id=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,(id,))
+                cursor.execute(sql,(storeid,id,))
                 result = cursor.fetchone()
             if result != None:
                 return {'err':None, 'msg': 'One Product data collected.', 'data':{'id':result[0], 
@@ -275,9 +279,9 @@ class database:
                 return {'err':'Id cannot be found.'}
                 
         else:
-            sql = "SELECT * FROM Product"
+            sql = "SELECT * FROM Product WHERE StoreId=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,())
+                cursor.execute(sql,(storeid,))
                 result = cursor.fetchall()
             message = {'err':None, 'msg': 'All Product data collected.', 'data': []}
             for product in result:
@@ -488,7 +492,7 @@ def test():
 
     #db.update_user(1, "test4", "test4@test.com")
     
-    db.new_store(1, "teststore10", 2)
+    #db.new_store(1, "teststore10", 2)
     
     #db.change_password(1, "secret2", "changedsecret")
     #db.update_store(5, "teststorechanged", 3, "agad98765", "684sag1sd32fa65")
@@ -503,7 +507,7 @@ def test():
 #db = database()
 #db.connect_db()
 
-#1test()
+test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

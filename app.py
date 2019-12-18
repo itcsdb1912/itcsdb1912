@@ -84,7 +84,8 @@ def products():
             return render_template('list_products.html', products=[], user=user)
         else:
             store = result["data"]
-            result = db.get_product(user_id, store["id"])
+            
+            result = db.get_product(store["id"])
 
             return render_template('list_products.html', products=result["data"], user=user)
     else:
@@ -108,13 +109,13 @@ def activate(store_id):
     else:
         return redirect(url_for("index"))
 
-@app.route('/store/<int:store_id>/activate')
-def activate(store_id):
+@app.route('/deactivate_store')
+def deactivate_store():
     user = session.get("user")
 
     if(user):
         user_id = user["id"]
-        db.deactivate_store(user["id"], store_id)
+        db.deactivate_store(user["id"])
 
         store_result = db.get_store(user_id)
         user_result = db.get_user(user_id)
@@ -207,7 +208,7 @@ def product(product_id):
     if(request.method == "GET"):
         if (user):
             store_id = db.get_store(user["id"])
-            p = db.get_product(store_id)
+            p = db.get_product(store_id, product_id)
             return render_template('product.html', product=p, user=user)
         else:
             return redirect(url_for('index'))

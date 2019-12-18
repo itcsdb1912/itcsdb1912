@@ -3,14 +3,14 @@
 {% block content %}
 <div id="StorePage">
     <div>
-        <form action="/store/{% if store %}{{store.id}}{% endif%}" method="POST">
+        <form action="/store{% if store %}/{{store.id}}{% endif%}" method="POST">
            <div class="form_input">
                 <label for="store_name">Store Name</label>
                 <input type="text" name="store_name" {% if store %} value="{{store.storename}}" {% endif %}>
             </div>
             <div class="form_input">
                 <label for="store_address">Store Address</label>
-                <input type="text" name="store_address" {% if store %} value="{{store.locationid}}" {% endif %} >
+                <input type="text" name="store_address" {% if store %} value="{{store.locationid}}" {% else %} value="1" {% endif %} >
             </div>
             <div class="form_input">
                 <label for="store_api_key">STORE API KEY</label>

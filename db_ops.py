@@ -298,8 +298,7 @@ class database:
                                                                         'userid':result[7]}}
         else:
             return  {'err':'There is no active store.'}
-        
-    def get_product(self,storeid, id=None ):
+    def get_product(self,userid, storeid, id=None ):
         
         if id != None:
             sql = "SELECT * FROM Product WHERE StoreId=%s AND Id=%s"

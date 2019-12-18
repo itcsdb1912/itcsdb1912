@@ -89,13 +89,16 @@ def store():
             try:
                 store_name = validators.string(request.form.get("store_name"))
                 store_address = validators.string(request.form.get("store_address"))
-                store_api_key = validators.numeric(request.form.get("store_api_key"))
-                store_password = validators.numeric(request.form.get("store_password"))
+                store_api_key = validators.string(request.form.get("store_api_key"))
+                store_password = validators.string(request.form.get("store_password"))
             except:
-                return redirect(url_for("account", err="Datas not valid"))
+                return render_template("store.html", err="datas not valid")
 
-            db.new_store(user_id, store_name, store_address, store_api_key, store_password)
-            return redirect(url_for("account"))
+            result = db.new_store(user_id, store_name, store_address, store_api_key, store_password)
+            if(result["err"]):
+                return render_template("store.html", err=result["err"])
+            else:
+                return redirect(url_for("account"))
         else:
             return redirect(url_for("index"))
 

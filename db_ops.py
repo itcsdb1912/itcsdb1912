@@ -2,10 +2,23 @@ import psycopg2
 from urllib.parse import urlparse
 from SQL_QUERIES import SQL_QUERIES
 
+from shopifycontroller import shopify_controller
+
+shopifyconfig = {
+    'API_KEY':'3ec8f9e2dbc135965075c70c0ee75e01',
+    'PASSWORD':'9b090a0649866192112b7bc40c0e359e',
+    'API_VERSION':'2019-10',
+    'SHOP_NAME':'testandrest'
+}
+shopifyctrl = shopify_controller(shopifyconfig)
+shopifyctrl.connect()
+
 class database:
     def __init__(self):
         self.connection = None
         self.url = urlparse("postgres://padrjufxoslazm:66097f7c6a273316c865544b566106405e2d014e3f6f61ea3de5d71d42668c0c@ec2-54-247-178-166.eu-west-1.compute.amazonaws.com:5432/d65tnih23lgdao")
+
+        
     #INITIALIZING DB 
     def connect_db(self):
         try:
@@ -99,25 +112,27 @@ class database:
                 return {'err': 'Store name exists.'}            
     def add_product(self, store_id, product, update_iferror=False):
         # insert to variants with saved product_id
+        print("check1")
         try:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 
 
                 sql_add_product = SQL_QUERIES['add_product']
-                print(product)
+                
                 cursor.execute(sql_add_product, (str(product.id),
                                     product.title,
                                     product.variants[0].price,
                                     product.body_html,
                                     store_id,))
-
+            print("check2")
             self.connection.commit()
             for variant in product.variants:
-                db.add_variant(variant)
+                self.add_variant(variant)
             print("You have successfully synced a product.")
             return {'err':None,'msg':'You have successfully created a product.'}
         except:
+            print("check3")
             self.connection.rollback()
             message = {'err':'This product exists.'}
             if update_iferror==True:
@@ -227,6 +242,7 @@ class database:
             print("Store does not exist.")
             return {'err': 'Store does not exist.'}
     def update_product(self, store_id, product):
+        print("check4")
         with self.connection.cursor() as cursor:
             sql = "UPDATE Product \
                 SET ProductName=%s, ProductPrice=%s,ProductDescription=%s,StoreId=%s WHERE Id=%s"
@@ -234,7 +250,10 @@ class database:
                                 product.variants[0].price, 
                                 product.body_html, 
                                 store_id, 
-                                product.id,))
+                                str(product.id),))
+
+
+            print("check5")
             self.connection.commit()
             for variant in product.variants:
                 self.update_variant(product.id, variant)
@@ -489,7 +508,9 @@ def test():
     db.get_data("Product")
     db.get_data("Location")
     #db.get_data("ProductVariant")
-
+    
+    products = shopifyctrl.get_products()
+    db.sync_products(1,products)
     db.create_user("test4", "test4@test.com", "secret2")
 
     #db.update_user(1, "test4", "test4@test.com")

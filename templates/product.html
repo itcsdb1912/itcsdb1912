@@ -5,27 +5,27 @@
     {% if product %}
         <div class="product_detail__wrapper">
             <div class="side_image">
-                <img src="{{product.image.src}}" alt="">
+                <img src="{{product["image"]}}" alt="">
             </div>
             <div class="side_detail">
                 <form action="/product/{{product.id}}" method="POST">
                     <div class="form_input">
                         <label for="title">Title: </label>
-                        <input type="text" name="title" value="{{product.title}}">
+                        <input type="text" name="title" value="{{product["title"]}}">
                     </div>
 
                     <div class="form_input">
                         <label for="description">Description: </label>
-                        <input type="text" name="description" value="{{product.body_html}}">
+                        <input type="text" name="description" value="{{product.description}}">
                     </div>
 
                     <div class="form_input">
                         <label for="price">Price: </label>
-                        <input type="text" name="price" value="{{product.variants[0].price}}">
+                        <input type="text" name="price" value="{{product.price}}">
                     </div>
                     <div class="form_input">
                         <label for="stock">Stock: </label>
-                        <input type="text" name="stock" value="{{product.variants[0].inventory_quantity}}">
+                        <input type="text" name="stock" value="{% if product.stock %}{{product.stock}}{% else %}0{% endif %}">
                     </div>
                     <div class="form_input">
                         <input type="submit" value="UPDATE">        

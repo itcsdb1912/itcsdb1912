@@ -39,7 +39,7 @@ db.create_tables()
 @app.route('/')
 def index():
     user = session.get('user')
-    
+    '''
     if(db.has_user()):
         if(user):
             return render_template('index.html', user=user)
@@ -47,6 +47,11 @@ def index():
             return render_template('login.html')
     else:
         return render_template('create.html')
+    '''
+    if(user):
+        return render_template('index.html', user=user)
+    else:
+        return render_template('index.html')
 
 @app.route('/sync')
 def sync():
@@ -207,24 +212,23 @@ def product(product_id):
 
     if(request.method == "GET"):
         if (user):
-            store_id = db.get_store(user["id"])
-            p = db.get_product(store_id, product_id)
-            return render_template('product.html', product=p, user=user)
+            store_result = db.get_active_store(user["id"])
+
+            p = db.get_product(store_result["data"]["id"], product_id)
+            return render_template('product.html', product=p["data"], user=user)
         else:
             return redirect(url_for('index'))
     else:
         if(user):
-            try:
-                title = validators.string(request.form.get("title"))
-                price = validators.float(request.form.get("price"))
-                stock = validators.integer(request.form.get("stock"))
-            except:
-                return redirect(url_for("index", err="datas not valid"))
-            product = shopifyctrl.get_product(int(product_id))
+            title = validators.string(request.form.get("title"))
+            price = validators.string(request.form.get("price"))
+            stock = validators.string(request.form.get("stock"))
+            
+            product = shopifyctrl.get_product(product_id)
             product.title = title
-            product.price = price
-            product.variants[0].inventory_quantity = stock
-            product.save()
+            product.price = float(price)
+            product.variants[0].inventory_quantity = int(stock)
+            # product.save()
             result = db.update_product(product_id, product)
 
             return redirect(url_for("product/"+product_id))
@@ -285,8 +289,7 @@ def account():
             user_result = db.get_user(user_id)
             user_data = user_result["data"]
 
-            print(user_data)
-
+            session["user"] = user_data
             return render_template('account.html', user=user_data, stores=stores)
         else:
             return redirect(url_for("index"))
@@ -313,8 +316,7 @@ def create():
         if(result['err']):
             return render_template("create.html", err=result["err"])
         else:
-            session['user'] = request.form
-            return redirect(url_for("index"))
+            return redirect(url_for("login"))
     else:
         return render_template('create.html');
 

@@ -281,10 +281,10 @@ class database:
             return {'err': None, 'msg': 'Store is activated.'}
         else:
             return {'err': 'There is another active store.'}
-    def deactivate_store(self):
-        sql = "UPDATE Store SET IsActivated=-1  WHERE IsActivated=1"
+    def deactivate_store(self, userid):
+        sql = "UPDATE Store SET IsActivated=-1  WHERE IsActivated=1 AND UserId=%s"
         with self.connection.cursor() as cursor:
-            cursor.execute(sql,())
+            cursor.execute(sql,(userid,))
             self.connection.commit()
         return {'err':None, 'msg': 'Store deactivated.'}
     

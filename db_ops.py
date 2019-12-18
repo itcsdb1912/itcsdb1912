@@ -277,7 +277,7 @@ class database:
             sql = "UPDATE Store SET IsActivated=1  WHERE Id=%s"
             with self.connection.cursor() as cursor:
                 cursor.execute(sql,(storeid,))
-                result = cursor.fetchone()
+                self.connection.commit()
             return {'err': None, 'msg': 'Store is activated.'}
         else:
             return {'err': 'There is another active store.'}
@@ -298,7 +298,7 @@ class database:
                                                                         'userid':result[7]}}
         else:
             return  {'err':'There is no active store.'}
-    def get_product(self,userid, storeid, id=None ):
+    def get_product(self, storeid, id=None ):
         
         if id != None:
             sql = "SELECT * FROM Product WHERE StoreId=%s AND Id=%s"
@@ -536,8 +536,8 @@ def test():
 
     #db.update_user(1, "test4", "test4@test.com")
     
-    #db.new_store(1, "teststore10", 2)
-    
+    db.new_store(1, "teststore11", 2)
+    print(db.activate_store(1,25))
     #db.change_password(1, "secret2", "changedsecret")
     #db.update_store(5, "teststorechanged", 3, "agad98765", "684sag1sd32fa65")
 

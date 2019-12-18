@@ -105,7 +105,7 @@ class database:
 
                 sql_add_product = SQL_QUERIES['add_product']
                 print(product)
-                cursor.execute(sql_add_product, (product.id,
+                cursor.execute(sql_add_product, (str(product.id),
                                     product.title,
                                     product.variants[0].price,
                                     product.body_html,
@@ -130,7 +130,7 @@ class database:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = SQL_QUERIES['add_variant']
-                cursor.execute(sql, (variant.id, 
+                cursor.execute(sql, (str(variant.id), 
                                     variant.option1, 
                                     variant.option2, 
                                     variant.option3,
@@ -424,7 +424,7 @@ class database:
             return False
     # SOME UTILITY METHODS
     def drop_tables(self):
-        table_list = ['Account','Location','Category', 'Store','Product', 'ProductVariant' ]
+        table_list = ['ProductVariant' ]
         for table in table_list:
             with self.connection.cursor() as cursor:
                 sql = "DROP TABLE " + table + " CASCADE"

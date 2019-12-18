@@ -153,7 +153,7 @@ class database:
                                     variant.inventory_quantity, 
                                     variant.sku,
                                     variant.compare_at_price,
-                                    variant.product_id,))
+                                    str(variant.product_id),))
             self.connection.commit()
             print("You have successfully added a variant.")
             return {'err':None,'msg':'You have successfully added a variant.'}
@@ -264,17 +264,15 @@ class database:
             sql = "UPDATE ProductVariant \
                 SET Option1=%s, Option2=%s,Option3=%s,Stock=%s,Sku=%s, CompareAtPrice=%s, ProductId=%s WHERE Id=%s"
             print("################3")
-            print(product_id)
-            print(variant)
-            print("################3")
+
             cursor.execute(sql, (variant.option1, 
                                 variant.option2, 
                                 variant.option3,
                                 variant.inventory_quantity, 
                                 variant.sku,
                                 variant.compare_at_price,
-                                product_id, 
-                                variant.id,))
+                                str(product_id), 
+                                str(variant.id),))
             self.connection.commit()
             print("Product Variant attributes changed.")
             return {'err': None, 'msg': 'Product Variant attributes changed.'}

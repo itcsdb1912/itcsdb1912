@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 # session related
 app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
-app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REDIS"] = redis_db
 
 
@@ -55,9 +55,13 @@ def sync():
     if(user):
         user_id = user["id"]
         products = shopifyctrl.get_products()
-        db.sync_products(user_id, products)
+        
+        result = db.sync_products(user_id, products)
 
-        return redirect(url_for("account"))
+        if(result["err"]):
+            return render_template("account", err="Sync Failed")
+        else:
+            return redirect(url_for("account"))
     else:
         return redirect(url_for("index"))
         
@@ -89,13 +93,16 @@ def store():
             try:
                 store_name = validators.string(request.form.get("store_name"))
                 store_address = validators.string(request.form.get("store_address"))
-                store_api_key = validators.numeric(request.form.get("store_api_key"))
-                store_password = validators.numeric(request.form.get("store_password"))
+                store_api_key = validators.string(request.form.get("store_api_key"))
+                store_password = validators.string(request.form.get("store_password"))
             except:
-                return redirect(url_for("account"), err="Datas not valid")
+                return render_template("store.html", err="datas not valid")
 
-            db.new_store(user_id, store_name, store_address, store_api_key, store_password)
-            return redirect(url_for("account"))
+            result = db.new_store(user_id, store_name, store_address, store_api_key, store_password)
+            if(result["err"]):
+                return render_template("store.html", err=result["err"])
+            else:
+                return redirect(url_for("account"))
         else:
             return redirect(url_for("index"))
 

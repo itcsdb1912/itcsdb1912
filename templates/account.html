@@ -41,11 +41,14 @@
                             <p>Address: {{s.address}}</p>
                             <div class="buttons_line">
                                 <a href="/store/{{s.id}}">View</a>
+
+                                <!--
                                 {% if s.isActivated == 1 %}
                                     <a href="/store/{{s.id}}/deactivate"> Deactivate</a>
                                 {% else %}
                                     <a href="/store/{{s.id}}/activate"> Activate</a>
                                 {% endif %}
+                                -->
                                 
                                 <a href="/store/{{s.id}}/delete">Delete</a>
                             </div>

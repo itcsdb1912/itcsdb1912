@@ -6,7 +6,7 @@
         <form action="/store" method="POST">
            <div class="form_input">
                 <label for="store_name">Store Name</label>
-                <input type="text" name="storename" {% if store %} value="{{store.name}}" {% endif %}>
+                <input type="text" name="store_name" {% if store %} value="{{store.name}}" {% endif %}>
             </div>
             <div class="form_input">
                 <label for="store_address">Store Address</label>
@@ -30,5 +30,7 @@
         </form>
         
     </div>
+
+    {{err}}
 </div>
 {% endblock %}

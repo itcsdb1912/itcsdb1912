@@ -232,7 +232,7 @@ class database:
                                 product.variants[0].price, 
                                 product.body_html, 
                                 store_id, 
-                                product.id))
+                                product.id,))
             self.connection.commit()
             for variant in product.variants:
                 self.update_variant(product.id, variant)

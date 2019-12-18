@@ -278,11 +278,8 @@ class database:
             print("Product Variant attributes changed.")
             return {'err': None, 'msg': 'Product Variant attributes changed.'}
     
-    def get_product(self,userid, id=None ):
-        sql = "SELECT Id FROM Store WHERE UserId=%s"
-        with self.connection.cursor() as cursor:
-            cursor.execute(sql,(userid,))
-            storeid = cursor.fetchone()[0]
+    def get_product(self,storeid, id=None ):
+        
         if id != None:
             sql = "SELECT * FROM Product WHERE StoreId=%s AND Id=%s"
             with self.connection.cursor() as cursor:

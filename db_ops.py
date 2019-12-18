@@ -294,7 +294,8 @@ class database:
                                                                         'price':result[2],
                                                                         'description':result[3],
                                                                         'timestamp':result[4],
-                                                                        'storeid':result[5]}}
+                                                                        'image':result[5],
+                                                                        'storeid':result[6]}}
             else:
                 return {'err':'Id cannot be found.'}
                 
@@ -310,7 +311,8 @@ class database:
                                         'price':product[2],
                                         'description':product[3],
                                         'timestamp':product[4],
-                                        'storeid':product[5]})
+                                        'image':result[5],
+                                        'storeid':product[6]})
             return message
     def get_store(self, userid, id=None):
 

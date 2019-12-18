@@ -2,16 +2,7 @@ import psycopg2
 from urllib.parse import urlparse
 from SQL_QUERIES import SQL_QUERIES
 
-from shopifycontroller import shopify_controller
 
-shopifyconfig = {
-    'API_KEY':'3ec8f9e2dbc135965075c70c0ee75e01',
-    'PASSWORD':'9b090a0649866192112b7bc40c0e359e',
-    'API_VERSION':'2019-10',
-    'SHOP_NAME':'testandrest'
-}
-shopifyctrl = shopify_controller(shopifyconfig)
-shopifyctrl.connect()
 
 class database:
     def __init__(self):
@@ -292,7 +283,8 @@ class database:
                                                                         'description':result[3],
                                                                         'timestamp':result[4],
                                                                         'image':result[5],
-                                                                        'storeid':result[6]}}
+                                                                        'categoryid':result[6],
+                                                                        'storeid':result[7]}}
             else:
                 return {'err':'Id cannot be found.'}
                 
@@ -308,8 +300,9 @@ class database:
                                         'price':product[2],
                                         'description':product[3],
                                         'timestamp':product[4],
-                                        'image':result[5],
-                                        'storeid':product[6]})
+                                        'image':product[5],
+                                        'categoryid':product[6],
+                                        'storeid':product[7]})
             return message
     def get_store(self, userid, id=None):
 
@@ -505,10 +498,11 @@ def test():
     db.get_data("Store")
     db.get_data("Product")
     db.get_data("Location")
-    #db.get_data("ProductVariant")
+    db.get_data("ProductVariant")
     
-    products = shopifyctrl.get_products()
-    db.sync_products(1,products)
+    #products = shopifyctrl.get_products()
+    #db.sync_products(1,products)
+    print(db.get_product(25))
     db.create_user("test4", "test4@test.com", "secret2")
 
     #db.update_user(1, "test4", "test4@test.com")
@@ -528,7 +522,7 @@ def test():
 #db = database()
 #db.connect_db()
 
-# test()
+test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

@@ -55,9 +55,13 @@ def sync():
     if(user):
         user_id = user["id"]
         products = shopifyctrl.get_products()
-        db.sync_products(user_id, products)
+        
+        result = db.sync_products(user_id, products)
 
-        return redirect(url_for("account"))
+        if(result["err"]):
+            return render_template("account", err="Sync Failed")
+        else:
+            return redirect(url_for("account"))
     else:
         return redirect(url_for("index"))
         

@@ -8,13 +8,13 @@
             <div class="product_list">
                 {% for p in products %}
                     <div class="product_item card">
-                        <img src="{{ p.image.src }}" alt="">
+                        <img src="{{ p["image"] }}" alt="">
                         <div class="side_text">
-                            <p>{{p.title}}</p>
-                            <p>Stock: {{p.variants[0].inventory_quantity}}</p>
+                            <p>{{p["title"]}}</p>
+                            <p>Stock: {{p["stock"]}}</p>
                             <div class="buttons_line">
-                                <a href="/product/{{p.id}}">View</a>
-                                <a href="/delete_product/{{p.id}}">Delete</a>
+                                <a href="/product/{{p["id"]}}">View</a>
+                                <a href="/delete_product/{{p["id"]}}">Delete</a>
                             </div>
                         </div>
                     </div>

@@ -65,8 +65,7 @@ def sync():
         if(result["err"]):
             return render_template("account.html", user=user_data, err="Sync Failed", stores=stores)
         else:
-            
-            return redirect(url_for("account"), user=user_data, stores=stores, msg="Sync successed")
+            return render_template("account.html", user=user_data, stores=stores, msg="Sync successed")
     else:
         return redirect(url_for("index"))
         
@@ -78,7 +77,8 @@ def drop_tables():
 def products():
     user = session.get('user')
     if (user):
-        products = shopifyctrl.get_products()
+        print(user["id"])
+        products = db.get_product(user["id"])["data"]
         return render_template('list_products.html', products=products, user=user)
     else:
         return redirect(url_for('index'))

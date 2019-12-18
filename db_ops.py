@@ -279,7 +279,7 @@ class database:
             return {'err': None, 'msg': 'Product Variant attributes changed.'}
     
     def get_product(self,userid, id=None ):
-        sql = "SELECT Id FROM Store WHERE UserId=%s AND IsActivated=1"
+        sql = "SELECT Id FROM Store WHERE UserId=%s"
         with self.connection.cursor() as cursor:
             cursor.execute(sql,(userid,))
             storeid = cursor.fetchone()[0]
@@ -529,7 +529,7 @@ def test():
 #db = database()
 #db.connect_db()
 
-test()
+# test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

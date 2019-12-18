@@ -112,25 +112,27 @@ class database:
                 return {'err': 'Store name exists.'}            
     def add_product(self, store_id, product, update_iferror=False):
         # insert to variants with saved product_id
+        print("check1")
         try:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 
 
                 sql_add_product = SQL_QUERIES['add_product']
-                print(product)
+                
                 cursor.execute(sql_add_product, (str(product.id),
                                     product.title,
                                     product.variants[0].price,
                                     product.body_html,
                                     store_id,))
-
+            print("check2")
             self.connection.commit()
             for variant in product.variants:
-                db.add_variant(variant)
+                self.add_variant(variant)
             print("You have successfully synced a product.")
             return {'err':None,'msg':'You have successfully created a product.'}
         except:
+            print("check3")
             self.connection.rollback()
             message = {'err':'This product exists.'}
             if update_iferror==True:
@@ -240,6 +242,7 @@ class database:
             print("Store does not exist.")
             return {'err': 'Store does not exist.'}
     def update_product(self, store_id, product):
+        print("check4")
         with self.connection.cursor() as cursor:
             sql = "UPDATE Product \
                 SET ProductName=%s, ProductPrice=%s,ProductDescription=%s,StoreId=%s WHERE Id=%s"
@@ -247,7 +250,10 @@ class database:
                                 product.variants[0].price, 
                                 product.body_html, 
                                 store_id, 
-                                product.id,))
+                                str(product.id),))
+
+
+            print("check5")
             self.connection.commit()
             for variant in product.variants:
                 self.update_variant(product.id, variant)
@@ -502,7 +508,9 @@ def test():
     db.get_data("Product")
     db.get_data("Location")
     #db.get_data("ProductVariant")
-
+    
+    products = shopifyctrl.get_products()
+    db.sync_products(1,products)
     db.create_user("test4", "test4@test.com", "secret2")
 
     #db.update_user(1, "test4", "test4@test.com")

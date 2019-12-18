@@ -30,14 +30,18 @@ class database:
     def sync_products(self, user_id, products):
         print(products)
         sql_get_store_id = "SELECT Id FROM Store WHERE UserId = %s"
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql_get_store_id, (user_id,))
+                store_id = cursor.fetchone()[0]
 
-        with self.connection.cursor() as cursor:
-            cursor.execute(sql_get_store_id, (user_id,))
-            store_id = cursor.fetchone()[0]
+            for product in products:
+                print(product)
+                self.add_product(store_id, product, update_iferror=True)
 
-        for product in products:
-            print(product)
-            self.add_product(store_id, product, update_iferror=True)
+            return {'err': None, 'msg': 'Sync success.'}
+        except:
+            return {'err': 'Sync failed.'}
 
     def create_location(self, country, city, county='Center', neighbor='default', address='default'):
         with self.connection.cursor() as cursor:
@@ -81,14 +85,14 @@ class database:
                 return {'err': 'Wrong password.'}
     def new_store(self, userid, name, locationid, apikey='default', password='default'):
         with self.connection.cursor() as cursor:
-            try:
+            #try:
                 # Create a new record
                 sql = SQL_QUERIES['new_store']
                 cursor.execute(sql, (name, locationid, userid, apikey, password))
                 self.connection.commit()
                 print("You have successfully opened a store.")
                 return {'err': None, 'msg': 'Store is opened.'}
-            except:
+            #except:
                 self.connection.rollback()
                 print("This store name exists. Please pick another name.")
                 return {'err': 'Store name exists.'}            
@@ -482,7 +486,7 @@ def test():
 
     #db.update_user(1, "test4", "test4@test.com")
     
-    db.new_store(1, "teststore2", 2)
+    db.new_store(1, "teststore10", 2)
     
     #db.change_password(1, "secret2", "changedsecret")
     #db.update_store(5, "teststorechanged", 3, "agad98765", "684sag1sd32fa65")
@@ -494,7 +498,7 @@ def test():
     #db.sync_products(1,products)
     db.connection.close()
 
-#test()
+#1test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

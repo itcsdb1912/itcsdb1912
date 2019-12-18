@@ -77,11 +77,53 @@ def drop_tables():
 def products():
     user = session.get('user')
     if (user):
-        store_id = db.get_store(user["id"])
-        products = db.get_product(store_id)
-        return render_template('list_products.html', products=products, user=user)
+        user_id = user["id"]
+        result = db.get_active_store(user_id)
+
+        if(result["err"]):
+            return render_template('list_products.html', products=[], user=user)
+        else:
+            store = result["data"]
+            result = db.get_product(user_id, store["id"])
+
+            return render_template('list_products.html', products=result["data"], user=user)
     else:
         return redirect(url_for('index'))
+
+
+@app.route('/store/<int:store_id>/activate')
+def activate(store_id):
+    user = session.get("user")
+
+    if(user):
+        user_id = user["id"]
+        db.activate_store(user["id"], store_id)
+
+        store_result = db.get_store(user_id)
+        user_result = db.get_user(user_id)
+        if(store_result["err"]):
+            return render_template("account.html", user=user_result["data"], err=store_result["err"])
+        else:
+            return render_template("account.html", user=user_result["data"], stores=store_result["data"], msg="store activated")
+    else:
+        return redirect(url_for("index"))
+
+@app.route('/store/<int:store_id>/activate')
+def activate(store_id):
+    user = session.get("user")
+
+    if(user):
+        user_id = user["id"]
+        db.deactivate_store(user["id"], store_id)
+
+        store_result = db.get_store(user_id)
+        user_result = db.get_user(user_id)
+        if(store_result["err"]):
+            return render_template("account.html", user=user_result["data"], err=store_result["err"])
+        else:
+            return render_template("account.html", user=user_result["data"], stores=store_result["data"], msg="store activated")
+    else:
+        return redirect(url_for("index"))
 
 @app.route('/store',  methods=["GET", "POST"])
 def store():

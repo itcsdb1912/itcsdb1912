@@ -288,11 +288,12 @@ class database:
                                         'timestamp':product[4],
                                         'storeid':product[5]})
             return message
-    def get_store(self, id=None):
+    def get_store(self, userid, id=None):
+
         if id != None:
-            sql = "SELECT * FROM Store WHERE Id=%s"
+            sql = "SELECT * FROM Store WHERE Id=%s AND UserId=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,(id,))
+                cursor.execute(sql,(id,userid))
                 result = cursor.fetchone()
             if result != None:
                 return {'err':None, 'msg': 'One store data collected.', 'data':{'id':result[0], 
@@ -307,9 +308,9 @@ class database:
                 return {'err':'Id cannot be found.'}
                 
         else:
-            sql = "SELECT * FROM Store"
+            sql = "SELECT * FROM Store WHERE UserId=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,())
+                cursor.execute(sql,(userid,))
                 result = cursor.fetchall()
             message = {'err':None, 'msg': 'All store data collected.', 'data': []}
             for store in result:

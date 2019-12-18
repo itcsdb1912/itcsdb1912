@@ -77,8 +77,8 @@ def drop_tables():
 def products():
     user = session.get('user')
     if (user):
-        print(user["id"])
-        products = db.get_product(user["id"])["data"]
+        store_id = db.get_store(user["id"])
+        products = db.get_product(store_id)
         return render_template('list_products.html', products=products, user=user)
     else:
         return redirect(url_for('index'))
@@ -164,7 +164,8 @@ def product(product_id):
 
     if(request.method == "GET"):
         if (user):
-            p = shopifyctrl.get_product(int(product_id))
+            store_id = db.get_store(user["id"])
+            p = db.get_product(store_id)
             return render_template('product.html', product=p, user=user)
         else:
             return redirect(url_for('index'))

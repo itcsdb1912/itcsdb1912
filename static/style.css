@@ -31,6 +31,12 @@ ul li {
 
 .error {
     color: red;
+    margin: 8px 0;
+}
+
+.success {
+    margin: 8px 0;
+    color: green;
 }
 .card {
     padding: 6px 12px;

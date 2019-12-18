@@ -54,16 +54,19 @@ def sync():
     
     if(user):
         user_id = user["id"]
-        user_data = db.get_user(user_id)
+        user_data = db.get_user(user_id)["data"]
+
+        products = shopifyctrl.get_products()
 
         result = db.sync_products(user_id, products)
-        stores = db.get_store(user_id)
+        print(products)
+        stores = db.get_store(user_id)["data"]
 
         if(result["err"]):
             return render_template("account.html", user=user_data, err="Sync Failed", stores=stores)
         else:
             
-            return redirect(url_for("account"), user=user_data, stores=stores)
+            return redirect(url_for("account"), user=user_data, stores=stores, msg="Sync successed")
     else:
         return redirect(url_for("index"))
         
@@ -141,13 +144,16 @@ def store_with_id(store_id):
             try:
                 store_name = validators.string(request.form.get("store_name"))
                 store_address = validators.string(request.form.get("store_address"))
-                store_api_key = validators.numeric(request.form.get("store_api_key"))
-                store_password = validators.numeric(request.form.get("store_password"))
+                store_api_key = validators.string(request.form.get("store_api_key"))
+                store_password = validators.string(request.form.get("store_password"))
             except:
-                return redirect(url_for("account"), err="Datas not valid")
+                return redirect(render_template("store.html"), err="Datas not valid.")
 
-            db.update_store(user_id, store_name, store_address, store_api_key, store_password)
-            return redirect(url_for("account"))
+
+            db.update_store(store_id, store_name, store_address, store_api_key, store_password)
+            stores = db.get_store(user_id)["data"]
+            user_result = db.get_user(user_id)
+            return render_template("account.html", user=user_result["data"], stores=stores)
         else:
             return redirect(url_for("index"))
             

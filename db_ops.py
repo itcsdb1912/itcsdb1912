@@ -287,6 +287,7 @@ class database:
             cursor.execute(sql,())
             self.connection.commit()
         return {'err':None, 'msg': 'Store deactivated.'}
+    
     def get_active_store(self, userid):
         sql = "SELECT * FROM Store WHERE UserId=%s AND IsActivated=1"
         with self.connection.cursor() as cursor:
@@ -369,10 +370,11 @@ class database:
                                             'apikey':store[1], 
                                             'password':store[2],
                                             'storename':store[3],
-                                            'address':store[4],
+                                            'isactivated':store[4],
                                             'timestamp':store[5],
-                                            'userid':store[6],
-                                            'isactivated':store[7]})
+                                            'locationid':store[6],
+                                            'userid':store[7],
+                                            })
             return message
     def get_user(self, id):
         if id != None:
@@ -536,7 +538,7 @@ def test():
     
     #products = shopifyctrl.get_products()
     #db.sync_products(1,products)
-    print(db.deactivate_store())
+
     print(db.get_product(25))
     db.create_user("test4", "test4@test.com", "secret2")
 

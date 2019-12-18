@@ -85,14 +85,14 @@ class database:
                 return {'err': 'Wrong password.'}
     def new_store(self, userid, name, locationid, apikey='default', password='default'):
         with self.connection.cursor() as cursor:
-            #try:
+            try:
                 # Create a new record
                 sql = SQL_QUERIES['new_store']
                 cursor.execute(sql, (name, locationid, userid, apikey, password))
                 self.connection.commit()
                 print("You have successfully opened a store.")
                 return {'err': None, 'msg': 'Store is opened.'}
-            #except:
+            except:
                 self.connection.rollback()
                 print("This store name exists. Please pick another name.")
                 return {'err': 'Store name exists.'}            
@@ -296,14 +296,15 @@ class database:
                 cursor.execute(sql,(id,userid))
                 result = cursor.fetchone()
             if result != None:
+                
                 return {'err':None, 'msg': 'One store data collected.', 'data':{'id':result[0], 
                                                                         'apikey':result[1], 
                                                                         'password':result[2],
                                                                         'storename':result[3],
-                                                                        'address':result[4],
+                                                                        'isactivated':result[4],
                                                                         'timestamp':result[5],
-                                                                        'userid':result[6],
-                                                                        'isactivated':result[7]}}
+                                                                        'locationid':result[6],
+                                                                        'userid':result[7]}}
             else:
                 return {'err':'Id cannot be found.'}
                 
@@ -498,6 +499,9 @@ def test():
     #db.new_store(1, "teststore3", 1)
     #db.sync_products(1,products)
     db.connection.close()
+
+#db = database()
+#db.connect_db()
 
 #1test()
 #uid = user, sid = store, pid = product, vid = variant

@@ -281,7 +281,12 @@ class database:
             return {'err': None, 'msg': 'Store is activated.'}
         else:
             return {'err': 'There is another active store.'}
-
+    def deactivate_store(self):
+        sql = "UPDATE Store SET IsActivated=-1  WHERE IsActivated=1"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql,())
+            self.connection.commit()
+        return {'err':None, 'msg': 'Store deactivated.'}
     def get_active_store(self, userid):
         sql = "SELECT * FROM Store WHERE UserId=%s AND IsActivated=1"
         with self.connection.cursor() as cursor:
@@ -531,6 +536,7 @@ def test():
     
     #products = shopifyctrl.get_products()
     #db.sync_products(1,products)
+    print(db.deactivate_store())
     print(db.get_product(25))
     db.create_user("test4", "test4@test.com", "secret2")
 

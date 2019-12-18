@@ -113,7 +113,7 @@ class database:
                 
                 cursor.execute(sql_add_product, (str(product.id),
                                     product.title,
-                                    product.image.src,
+                                    product.images[0].src,
                                     product.variants[0].price,
                                     product.body_html,
                                     store_id,))
@@ -268,7 +268,37 @@ class database:
             self.connection.commit()
             print("Product Variant attributes changed.")
             return {'err': None, 'msg': 'Product Variant attributes changed.'}
-    
+    def activate_store(self, userid, storeid):
+        sql = "SELECT * FROM Store WHERE UserId=%s AND IsActivated=1"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql,(userid,))
+            result = cursor.fetchone()
+        if result == None:
+            sql = "UPDATE Store SET IsActivated=1  WHERE Id=%s"
+            with self.connection.cursor() as cursor:
+                cursor.execute(sql,(storeid,))
+                result = cursor.fetchone()
+            return {'err': None, 'msg': 'Store is activated.'}
+        else:
+            return {'err': 'There is another active store.'}
+
+    def get_active_store(self, userid):
+        sql = "SELECT * FROM Store WHERE UserId=%s AND IsActivated=1"
+        with self.connection.cursor() as cursor:
+            cursor.execute(sql,(userid,))
+            result = cursor.fetchone()
+        if result != None:
+            return {'err':None, 'msg': 'Active store data collected.', 'data':{'id':result[0], 
+                                                                        'apikey':result[1], 
+                                                                        'password':result[2],
+                                                                        'storename':result[3],
+                                                                        'isactivated':result[4],
+                                                                        'timestamp':result[5],
+                                                                        'locationid':result[6],
+                                                                        'userid':result[7]}}
+        else:
+            return  {'err':'There is no active store.'}
+        
     def get_product(self,storeid, id=None ):
         
         if id != None:

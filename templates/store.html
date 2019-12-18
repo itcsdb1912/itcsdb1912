@@ -14,11 +14,11 @@
             </div>
             <div class="form_input">
                 <label for="store_api_key">STORE API KEY</label>
-                <input type="text" name="store_api_key" {% if store %} value="{{store.api_key}}" {% endif %}>
+                <input type="text" name="store_api_key" {% if store %} value="{{store.apikey}}" {% endif %}>
             </div>
             <div class="form_input">
                 <label for="store_password">STORE PASSWORD</label>
-                <input type="text" name="store_password" {% if store %} value="{{store.api_key}}" {% endif %}>
+                <input type="text" name="store_password" {% if store %} value="{{store.password}}" {% endif %}>
             </div>
             <div>
                 {% if store %} 

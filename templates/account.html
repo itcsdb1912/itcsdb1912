@@ -37,8 +37,8 @@
                 {% for s in stores %}
                     <div class="store_item">
                         <div class="card">
-                            <p>{{s.storename}}</p>
-                            <p>Address: {{s.address}}</p>
+                            <p>{{s["storename"]}}</p>
+                            <p>Address: {{s["address"]}}</p>
                             <div class="buttons_line">
                                 <a href="/store/{{s.id}}">View</a>
 

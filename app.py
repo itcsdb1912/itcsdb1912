@@ -54,17 +54,16 @@ def sync():
     
     if(user):
         user_id = user["id"]
-        products = shopifyctrl.get_products()
+        user_data = db.get_user(user_id)
 
-        
         result = db.sync_products(user_id, products)
         stores = db.get_store(user_id)
 
         if(result["err"]):
-            return render_template("account.html", user=user, err="Sync Failed", stores=stores)
+            return render_template("account.html", user=user_data, err="Sync Failed", stores=stores)
         else:
             
-            return redirect(url_for("account"), user=user, stores=stores)
+            return redirect(url_for("account"), user=user_data, stores=stores)
     else:
         return redirect(url_for("index"))
         
@@ -129,7 +128,8 @@ def store_with_id(store_id):
 
     if (request.method == "GET"):
         if(user):
-            result = db.get_store(store_id)
+            user_id = user["id"]
+            result = db.get_store(user_id, store_id)
             store = result["data"]
             print(store)
             return render_template('store.html', user=user, store=store)

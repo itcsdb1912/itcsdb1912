@@ -76,7 +76,7 @@ SQL_QUERIES = {
 
     "check_user":"",
 
-    "new_store": "INSERT INTO Store (StoreName, Address, UserId, ApiKey, Password) VALUES (%s, %s, %s, %s, %s)",
+    "new_store": "INSERT INTO Store (StoreName, LocationId, UserId, ApiKey, Password) VALUES (%s, %s, %s, %s, %s)",
 
     "add_product": "INSERT INTO Product (Id, ProductName, ProductPrice, ProductDescription, StoreId) \
                     VALUES (%s, %s, %s, %s, %s)",
@@ -91,5 +91,7 @@ SQL_QUERIES = {
     "update_store": "",
 
     "get_tables": "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES",
+
+    "new_location": "INSERT INTO Location (Country, City, County, Neighborhood, Address) VALUES (%s, %s, %s, %s, %s)"
 
 }

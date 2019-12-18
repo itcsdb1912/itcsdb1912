@@ -41,6 +41,7 @@ class database:
 
             return {'err': None, 'msg': 'Sync success.'}
         except:
+            self.connection.rollback()
             return {'err': 'Sync failed.'}
 
     def create_location(self, country, city, county='Center', neighbor='default', address='default'):
@@ -142,6 +143,7 @@ class database:
             print("You have successfully added a variant.")
             return {'err':None,'msg':'You have successfully added a variant.'}
         except:
+            self.connection.rollback()
             print("Variant id exists.")
             return {'err':'Variant id exists.'}
     

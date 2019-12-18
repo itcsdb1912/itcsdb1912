@@ -482,7 +482,7 @@ def test():
 
     #db.update_user(1, "test4", "test4@test.com")
     
-    #db.new_store(1, "teststore2", 2)
+    db.new_store(1, "teststore2", 2)
     
     #db.change_password(1, "secret2", "changedsecret")
     #db.update_store(5, "teststorechanged", 3, "agad98765", "684sag1sd32fa65")
@@ -494,7 +494,7 @@ def test():
     #db.sync_products(1,products)
     db.connection.close()
 
-test()
+#test()
 #uid = user, sid = store, pid = product, vid = variant
 #You need to check uid, sid, pid and vid to ensure they get the right values as in the database table
 #Thats because auto increment continues from the last value

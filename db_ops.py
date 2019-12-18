@@ -122,6 +122,7 @@ class database:
                 
                 cursor.execute(sql_add_product, (str(product.id),
                                     product.title,
+                                    product.image.src,
                                     product.variants[0].price,
                                     product.body_html,
                                     store_id,))

@@ -41,17 +41,19 @@
                     <div class="store_item">
                         <div class="card">
                             <p>{{s["storename"]}}</p>
-                            <p>Address: {{s["address"]}}</p>
+                            <p>Address: {{s["locationid"]}}</p>
+                            <p>API KEY: {{s["apikey"]}}</p>
+                            <p>PASSWORD: {{s["password"]}}</p>
                             <div class="buttons_line">
                                 <a href="/store/{{s.id}}">View</a>
 
-                                <!--
-                                {% if s.isActivated == 1 %}
-                                    <a href="/store/{{s.id}}/deactivate"> Deactivate</a>
+                                
+                                {% if s["isactivated"] == 1 %}
+                                    <a href="/deactivate_store"> Deactivate</a>
                                 {% else %}
                                     <a href="/store/{{s.id}}/activate"> Activate</a>
                                 {% endif %}
-                                -->
+                                
                                 
                                 <a href="/store/{{s.id}}/delete">Delete</a>
                             </div>

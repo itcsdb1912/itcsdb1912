@@ -309,7 +309,7 @@ class database:
         if id != None:
             sql = "SELECT * FROM Product WHERE StoreId=%s AND Id=%s"
             with self.connection.cursor() as cursor:
-                cursor.execute(sql,(storeid,id,))
+                cursor.execute(sql,(storeid,str(id),))
                 result = cursor.fetchone()
             if result != None:
                 return {'err':None, 'msg': 'One Product data collected.', 'data':{'id':result[0], 

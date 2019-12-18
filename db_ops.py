@@ -301,10 +301,10 @@ class database:
                                                                         'apikey':result[1], 
                                                                         'password':result[2],
                                                                         'storename':result[3],
-                                                                        'address':result[4],
+                                                                        'isactivated':result[4],
                                                                         'timestamp':result[5],
-                                                                        'userid':result[6],
-                                                                        'isactivated':result[7]}}
+                                                                        'locationid':result[6],
+                                                                        'userid':result[7]}}
             else:
                 return {'err':'Id cannot be found.'}
                 

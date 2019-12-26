@@ -7,9 +7,13 @@ Account
 
 Store
 
+Location
+
 Product
 
 Variant
+
+Category
 
 .. toctree::
 

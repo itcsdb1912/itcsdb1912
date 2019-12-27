@@ -204,7 +204,25 @@ def store_with_id(store_id):
             return render_template("account.html", user=user_result["data"], stores=stores)
         else:
             return redirect(url_for("index"))
+
+
+@app.route('/product/<int:product_id>/delete')
+def delete_product(product_id):      
+    user = session.get("user")
+
+    if(user):
+        user_id = user["id"]
+
+        db.delete_product(product_id)
+
+        result = db.get_active_store(user_id)
+        store = result["data"]
             
+        result = db.get_product(store["id"])
+
+        return render_template('list_products.html', products=result["data"], user=user)
+    else:
+        return redirect(url_for("index"))
 @app.route('/product/<int:product_id>', methods=["GET", "POST"])
 def product(product_id):
     print(product_id)

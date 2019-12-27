@@ -429,13 +429,13 @@ class database:
         with self.connection.cursor() as cursor:
             # Read a single record
             sql = "SELECT Id FROM Product WHERE Id=%s"
-            cursor.execute(sql, (productid,))
+            cursor.execute(sql, (str(productid),))
             result = cursor.fetchone()
         if result != None:
             with self.connection.cursor() as cursor:
                 # Create a new record
                 sql = "DELETE FROM Product WHERE Id=%s"
-                cursor.execute(sql, (productid,))
+                cursor.execute(sql, (str(productid),))
             self.connection.commit()
             print("Product successfully deleted.")
             return True

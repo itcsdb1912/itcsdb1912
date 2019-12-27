@@ -9,12 +9,6 @@ the User's Store and associate the Products to that Store.
 Each product has many Variants and Categories. It helps to
 store different Products and makes us able to categorize them.
 
-<<<<<<< HEAD
-Also Location table is useful to store Store's address in a sensible way.
-
-
-Classes
-=======
 
 We provided 2 classes to handle the abstraction and logic: 
 
@@ -71,7 +65,6 @@ The class which we put all of the database functions
 Location
 
 Product
->>>>>>> 333e76e055514e4a720bb78e0b2df5871a68643d
 
 
 Category
